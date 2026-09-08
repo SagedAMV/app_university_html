@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>مدير الجامعة</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #a5b4fc;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --radius: 16px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+body {
+  font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(99,102,241,0.3);
+}
+.header h1 { font-size: 18px; font-weight: 700; }
+.header-back {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none; color: white; font-size: 20px;
+  cursor: pointer;
+}
+.header-actions { display: flex; gap: 8px; }
+.header-action {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none; color: white; font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease;
+}
+.header-action:active { transform: scale(0.85); }
+.header-action.active-mode { background: var(--danger); animation: dangerPulse 1s ease infinite; }
+@keyframes dangerPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
+.page { display: none; padding: 16px; }
+.page.active { display: block; animation: pageSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes pageSlideIn { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  padding: 12px 0; font-size: 13px; color: var(--text-secondary);
+  overflow-x: auto; white-space: nowrap;
+}
+.breadcrumb span { cursor: pointer; color: var(--primary); }
+.breadcrumb span:last-child { color: var(--text); font-weight: 600; }
+.breadcrumb .sep { color: var(--text-secondary); }
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  animation: cardStagger 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.card:nth-child(1) { animation-delay: 0.02s; }
+.card:nth-child(2) { animation-delay: 0.06s; }
+.card:nth-child(3) { animation-delay: 0.10s; }
+.card:nth-child(4) { animation-delay: 0.14s; }
+.card:nth-child(5) { animation-delay: 0.18s; }
+.card:nth-child(6) { animation-delay: 0.22s; }
+.card:nth-child(7) { animation-delay: 0.26s; }
+.card:nth-child(8) { animation-delay: 0.30s; }
+.card:nth-child(n+9) { animation-delay: 0.34s; }
+@keyframes cardStagger { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.card:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.card.selected { border-color: var(--primary); background: rgba(99,102,241,0.04); }
+.folder-card {
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+}
+.folder-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.folder-card:active .folder-icon { transform: scale(0.9) rotate(-5deg); }
+.folder-info { flex: 1; }
+.folder-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.folder-info p { font-size: 12px; color: var(--text-secondary); }
+.folder-actions { display: flex; gap: 8px; }
+.folder-actions button {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.file-card { display: flex; align-items: center; gap: 12px; }
+.file-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.file-card:active .file-icon { transform: scale(0.9); }
+.file-icon.pdf { background: #fee2e2; color: #dc2626; }
+.file-icon.doc { background: #dbeafe; color: #2563eb; }
+.file-icon.img { background: #d1fae5; color: #059669; }
+.file-icon.other { background: #f3e8ff; color: #7c3aed; }
+.file-info { flex: 1; }
+.file-info h4 { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.file-info p { font-size: 11px; color: var(--text-secondary); }
+.file-size { font-size: 10px; color: var(--text-secondary); }
+.checkbox-circle {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+.checkbox-circle.checked {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+/* Schedule */
+.schedule-grid-wrapper {
+  overflow-x: auto;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  -webkit-overflow-scrolling: touch;
+}
+.schedule-grid {
+  display: grid;
+  min-width: 600px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.sg-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 10px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  border-left: 1px solid rgba(255,255,255,0.15);
+}
+.sg-header:first-child { border-left: none; }
+.sg-time-label {
+  background: var(--bg);
+  padding: 8px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.sg-cell {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  min-height: 52px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  position: relative;
+}
+.sg-cell:active { background: rgba(99,102,241,0.08); transform: scale(0.96); }
+.sg-cell.empty { background: #fafbfc; }
+.sg-cell.empty:active { background: rgba(16,185,129,0.08); }
+.sg-lecture {
+  width: 100%;
+  padding: 6px 4px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+  animation: lecturePop 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+@keyframes lecturePop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+.sg-lecture:active { transform: scale(0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.sg-lecture .sg-subj { font-size: 10px; display: block; margin-bottom: 2px; }
+.sg-lecture .sg-room { opacity: 0.85; font-size: 8px; }
+/* Schedule list below */
+.schedule-list-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 16px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.schedule-day { margin-bottom: 16px; animation: dayFade 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.schedule-day:nth-child(2) { animation-delay: 0.05s; }
+.schedule-day:nth-child(3) { animation-delay: 0.1s; }
+.schedule-day:nth-child(4) { animation-delay: 0.15s; }
+.schedule-day:nth-child(5) { animation-delay: 0.2s; }
+@keyframes dayFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.schedule-day h3 {
+  font-size: 14px; font-weight: 700;
+  color: var(--primary);
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(99,102,241,0.05));
+  border-radius: 10px;
+  margin-bottom: 8px;
+  animation: headerSlide 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes headerSlide { from { transform: translateX(10px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.lecture-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-right: 4px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex; align-items: center; gap: 12px;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  animation: lectureSlide 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.lecture-card:nth-child(2) { animation-delay: 0.05s; }
+.lecture-card:nth-child(3) { animation-delay: 0.1s; }
+.lecture-card:nth-child(4) { animation-delay: 0.15s; }
+.lecture-card:nth-child(5) { animation-delay: 0.2s; }
+@keyframes lectureSlide { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+.lecture-card:active { transform: scale(0.98); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.lecture-time {
+  font-size: 13px; font-weight: 700;
+  color: var(--primary-dark);
+  min-width: 50px;
+}
+.lecture-details { flex: 1; }
+.lecture-details h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.lecture-details p { font-size: 12px; color: var(--text-secondary); }
+.lecture-delete {
+  width: 28px; height: 28px;
+  border-radius: 50%; border: none;
+  background: #fee2e2; color: var(--danger);
+  cursor: pointer; font-size: 14px;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease;
+}
+.lecture-delete:active { transform: scale(0.85); background: var(--danger); color: white; }
+#galaxy-canvas {
+  width: 100%;
+  height: calc(100vh - 160px);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #0f172a, #1e1b4b);
+  touch-action: none;
+}
+.galaxy-legend {
+  display: flex; gap: 12px; margin-top: 12px;
+  justify-content: center; flex-wrap: wrap;
+}
+.galaxy-legend span {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-secondary);
+}
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-around;
+  padding: 8px 0 12px;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; cursor: pointer;
+  border: none; background: none;
+  color: var(--text-secondary);
+  font-size: 11px; font-weight: 500;
+  padding: 4px 16px;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.nav-item.active { color: var(--primary); background: rgba(99,102,241,0.08); transform: translateY(-2px); }
+.nav-item span { font-size: 22px; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.nav-item.active span { transform: scale(1.15); }
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+.modal-overlay.show { display: flex; background: rgba(0,0,0,0.5); animation: overlayFade 0.3s ease; }
+@keyframes overlayFade { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,0.5); } }
+.modal {
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0.5; } to { transform: translateY(0); opacity: 1; } }
+.modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 13px; font-weight: 600;
+  margin-bottom: 6px; color: var(--text-secondary);
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  direction: rtl;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+.file-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  margin-bottom: 16px;
+}
+.file-upload-zone:active, .file-upload-zone.dragover {
+  border-color: var(--primary);
+  background: rgba(99,102,241,0.05);
+  transform: scale(0.98);
+}
+.file-upload-zone .upload-icon { font-size: 36px; margin-bottom: 8px; }
+.file-upload-zone p { font-size: 13px; color: var(--text-secondary); }
+.file-upload-zone .file-name { font-size: 12px; color: var(--success); font-weight: 600; margin-top: 8px; }
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+.btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(99,102,241,0.2); }
+.btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 15px rgba(239,68,68,0.25); }
+.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:active { background: var(--border); }
+.fab {
+  position: fixed;
+  bottom: 90px;
+  left: 20px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  font-size: 28px;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+  cursor: pointer;
+  z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.fab:active { transform: scale(0.9); }
+.fab::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0;
+  animation: fabPulse 2.5s ease-in-out infinite;
+  z-index: -1;
+}
+@keyframes fabPulse { 0%, 100% { transform: scale(1); opacity: 0; } 50% { transform: scale(1.3); opacity: 0.2; } }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); animation: emptyFade 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.empty-state span { font-size: 48px; display: block; margin-bottom: 12px; animation: emptyBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.empty-state p { font-size: 14px; }
+@keyframes emptyFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes emptyBounce { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%; transform: translateX(-50%);
+  background: var(--text);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 13px;
+  z-index: 300;
+  animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1), toastOut 0.3s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards;
+  white-space: nowrap;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+@keyframes toastOut { from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } to { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.95); } }
+.search-bar {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.search-bar:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+.search-bar input { border: none; outline: none; flex: 1; font-size: 14px; direction: rtl; }
+.search-bar span { color: var(--text-secondary); font-size: 18px; transition: color 0.2s ease; }
+.search-bar:focus-within span { color: var(--primary); }
+/* Selection bar */
+.selection-bar {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  left: 0; right: 0;
+  background: var(--primary-dark);
+  color: white;
+  padding: 12px 20px;
+  z-index: 95;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+}
+.selection-bar.show { display: flex; animation: selectionBarIn 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes selectionBarIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.selection-bar button {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.selection-bar .count {
+  font-size: 14px;
+  font-weight: 700;
+}
+/* Viewer */
+.file-viewer {
+  display: none;
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 250;
+  flex-direction: column;
+}
+.file-viewer.show { display: flex; animation: viewerIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes viewerIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.viewer-header {
+  background: var(--text);
+  color: white;
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.viewer-header h3 { font-size: 14px; font-weight: 600; flex: 1; text-align: center; }
+.viewer-header button {
+  background: rgba(255,255,255,0.15);
+  border: none; color: white;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+.viewer-body {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.viewer-body iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+.viewer-body img { max-width: 100%; max-height: 100%; object-fit: contain; }
+/* Share sheet */
+.share-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.share-option {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 12px 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.share-option:active { transform: scale(0.95); background: rgba(99,102,241,0.1); }
+.share-option .share-icon { font-size: 28px; }
+/* Galaxy popup */
+.galaxy-popup-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 250;
+  align-items: center;
+  justify-content: center;
+}
+.galaxy-popup-overlay.show { display: flex; animation: overlayFade 0.25s ease; }
+.galaxy-popup {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 24px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.galaxy-popup .popup-icon { font-size: 36px; margin-bottom: 8px; }
+.galaxy-popup .popup-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.galaxy-popup .popup-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+.galaxy-popup .popup-buttons { display: flex; gap: 8px; }
+.galaxy-popup .popup-buttons button {
+  flex: 1; padding: 10px; border-radius: 10px;
+  border: none; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.galaxy-popup .btn-yes { background: var(--primary); color: white; }
+.galaxy-popup .btn-no { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.galaxy-hint {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <button class="header-back" id="backBtn" style="display:none" onclick="goBack()">→</button>
+  <h1 id="headerTitle">📚 مديري الجامعي</h1>
+  <div class="header-actions">
+    <button class="header-action" id="testDataBtn" onclick="openModal('modal-testdata')" title="بيانات تجريبية">🧪</button>
+    <button class="header-action" id="selectBtn" style="display:none" onclick="toggleSelectMode()" title="تحديد">☑️</button>
+  </div>
+</div>
+
+<!-- Page: Files -->
+<div class="page active" id="page-files">
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" placeholder="ابحث في ملفاتك..." id="searchInput" oninput="handleSearch()">
+  </div>
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <div id="filesList"></div>
+</div>
+
+<!-- Page: Schedule -->
+<div class="page" id="page-schedule">
+  <div id="scheduleList"></div>
+</div>
+
+<!-- Page: Galaxy -->
+<div class="page" id="page-galaxy">
+  <canvas id="galaxy-canvas"></canvas>
+  <div class="galaxy-legend">
+    <span><span class="legend-dot" style="background:#f59e0b"></span> مجلد رئيسي</span>
+    <span><span class="legend-dot" style="background:#6366f1"></span> مجلد فرعي</span>
+    <span><span class="legend-dot" style="background:#10b981"></span> ملف</span>
+  </div>
+  <p class="galaxy-hint">👆 اسحب للتحرك • اقرص للتكبير • انقر على دائرة للانتقال</p>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="switchPage('files', this)">
+    <span>📁</span>
+    الملفات
+  </button>
+  <button class="nav-item" onclick="switchPage('schedule', this)">
+    <span>📅</span>
+    الجدول
+  </button>
+  <button class="nav-item" onclick="switchPage('galaxy', this)">
+    <span>🌌</span>
+    الخريطة
+  </button>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+
+<!-- Selection Bar -->
+<div class="selection-bar" id="selectionBar">
+  <button onclick="shareSelected()">📤 مشاركة</button>
+  <span class="count" id="selectionCount">0 محدد</span>
+  <button onclick="deleteSelected()">🗑️ حذف</button>
+  <button onclick="toggleSelectMode()">✕ إلغاء</button>
+</div>
+
+<!-- File Viewer -->
+<div class="file-viewer" id="fileViewer">
+  <div class="viewer-header">
+    <button onclick="closeViewer()">✕</button>
+    <h3 id="viewerTitle">اسم الملف</h3>
+    <button onclick="shareSingleFile()">📤</button>
+  </div>
+  <div class="viewer-body" id="viewerBody"></div>
+</div>
+
+<!-- Galaxy Node Popup -->
+<div class="galaxy-popup-overlay" id="galaxyPopup">
+  <div class="galaxy-popup">
+    <div class="popup-icon" id="popupIcon">📁</div>
+    <div class="popup-title" id="popupTitle">اسم العنصر</div>
+    <div class="popup-desc" id="popupDesc">هل تريد الانتقال لموقع هذا الملف؟</div>
+    <div class="popup-buttons">
+      <button class="btn-yes" onclick="galaxyNavigate()">✅ نعم، انتقل</button>
+      <button class="btn-no" onclick="closeGalaxyPopup()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: New Folder -->
+<div class="modal-overlay" id="modal-folder">
+  <div class="modal">
+    <h2>📁 مجلد جديد</h2>
+    <div class="form-group">
+      <label>اسم المجلد</label>
+      <input type="text" id="folderName" placeholder="مثال: الفيزياء">
+    </div>
+    <div class="form-group">
+      <label>الوصف (اختياري)</label>
+      <input type="text" id="folderDesc" placeholder="مثال: محاضرات وفروض">
+    </div>
+    <div class="form-group">
+      <label>اللون</label>
+      <select id="folderColor">
+        <option value="#f59e0b">🟡 أصفر</option>
+        <option value="#6366f1">🟣 بنفسجي</option>
+        <option value="#10b981">🟢 أخضر</option>
+        <option value="#ef4444">🔴 أحمر</option>
+        <option value="#3b82f6">🔵 أزرق</option>
+        <option value="#ec4899">🩷 وردي</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="createFolder()">إنشاء</button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-folder')" style="margin-top:8px">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Add File -->
+<div class="modal-overlay" id="modal-file">
+  <div class="modal">
+    <h2>📄 إضافة ملف</h2>
+    <div class="file-upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">📎</div>
+      <p>اضغط هنا لاختيار ملف</p>
+      <p style="font-size:11px;margin-top:4px">PDF, Word, صور, وغيرها</p>
+      <div class="file-name" id="uploadFileName"></div>
+    </div>
+    <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(this)" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.txt,.zip">
+    <div class="form-group">
+      <label>اسم الملف (يُملأ تلقائياً من الملف)</label>
+      <input type="text" id="fileName" placeholder="اسم الملف">
+    </div>
+    <button class="btn btn-primary" onclick="addFile()">رفع الملف</button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-file')" style="margin-top:8px">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Add Lecture -->
+<div class="modal-overlay" id="modal-lecture">
+  <div class="modal">
+    <h2>📅 محاضرة جديدة</h2>
+    <div class="form-group">
+      <label>اسم المادة</label>
+      <input type="text" id="lectureSubject" placeholder="مثال: الفيزياء">
+    </div>
+    <div class="form-group">
+      <label>اسم الدكتور</label>
+      <input type="text" id="lectureDoctor" placeholder="مثال: د. أحمد">
+    </div>
+    <div class="form-group">
+      <label>اليوم</label>
+      <select id="lectureDay">
+        <option value="السبت">السبت</option>
+        <option value="الأحد">الأحد</option>
+        <option value="الاثنين">الاثنين</option>
+        <option value="الثلاثاء">الثلاثاء</option>
+        <option value="الأربعاء">الأربعاء</option>
+        <option value="الخميس">الخميس</option>
+        <option value="الجمعة">الجمعة</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>الوقت من</label>
+      <input type="time" id="lectureTimeFrom">
+    </div>
+    <div class="form-group">
+      <label>الوقت إلى</label>
+      <input type="time" id="lectureTimeTo">
+    </div>
+    <div class="form-group">
+      <label>القاعة</label>
+      <input type="text" id="lectureRoom" placeholder="مثال: قاعة 201">
+    </div>
+    <button class="btn btn-primary" onclick="addLecture()">إضافة</button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-lecture')" style="margin-top:8px">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Share -->
+<div class="modal-overlay" id="modal-share">
+  <div class="modal">
+    <h2>📤 مشاركة</h2>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:12px" id="shareDesc">مشاركة الملفات عبر</p>
+    <div class="share-options" id="shareOptions"></div>
+    <button class="btn btn-secondary" onclick="closeModal('modal-share')" style="margin-top:16px">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Test Data -->
+<div class="modal-overlay" id="modal-testdata">
+  <div class="modal">
+    <h2>🧪 بيانات تجريبية</h2>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:20px">اختر حجم البيانات لاختبار التطبيق</p>
+    <button class="btn btn-primary" onclick="loadTestData('small')" style="margin-bottom:10px">
+      📦 بيانات صغيرة
+      <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:4px">4 مواد • 8 ملفات • 5 محاضرات</span>
+    </button>
+    <button class="btn btn-primary" onclick="loadTestData('large')" style="margin-bottom:10px;background:linear-gradient(135deg,#f59e0b,#d97706)">
+      📦📦 بيانات كبيرة
+      <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:4px">8 مواد • 25+ ملف • 15 محاضرة</span>
+    </button>
+    <button class="btn btn-danger" onclick="clearAllData()" style="margin-bottom:10px">
+      🗑️ حذف كل البيانات
+    </button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-testdata')">إلغاء</button>
+  </div>
+</div>
+
+<script>
+// ===== State =====
+let state = {
+  folders: [],
+  files: [],        // metadata in localStorage
+  fileBlobs: {},    // will be managed by IndexedDB
+  lectures: [],
+  currentFolder: null,
+  navigationStack: [],
+  currentPage: 'files',
+  selectMode: false,
+  selectedFiles: new Set(),
+  currentViewFile: null,
+  selectedFileForUpload: null
+};
+
+// ===== IndexedDB for file storage =====
+let db = null;
+
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('UniManagerDB', 1);
+    request.onupgradeneeded = (e) => {
+      const idb = e.target.result;
+      if (!idb.objectStoreNames.contains('files')) {
+        idb.createObjectStore('files', { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    request.onerror = (e) => reject(e);
+  });
+}
+
+function saveFileToDB(id, blob) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').put({ id, blob });
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e);
+  });
+}
+
+function getFileFromDB(id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readonly');
+    const req = tx.objectStore('files').get(id);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = (e) => reject(e);
+  });
+}
+
+function deleteFileFromDB(id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e);
+  });
+}
+
+// ===== Storage =====
+function saveState() {
+  localStorage.setItem('uniFolders', JSON.stringify(state.folders));
+  localStorage.setItem('uniFiles', JSON.stringify(state.files));
+  localStorage.setItem('uniLectures', JSON.stringify(state.lectures));
+}
+
+function loadState() {
+  try {
+    state.folders = JSON.parse(localStorage.getItem('uniFolders')) || [];
+    state.files = JSON.parse(localStorage.getItem('uniFiles')) || [];
+    state.lectures = JSON.parse(localStorage.getItem('uniLectures')) || [];
+  } catch(e) {
+    state.folders = []; state.files = []; state.lectures = [];
+  }
+}
+
+// ===== Navigation =====
+function switchPage(page, el) {
+  state.currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  
+  const fab = document.getElementById('fabBtn');
+  const title = document.getElementById('headerTitle');
+  const back = document.getElementById('backBtn');
+  const selectBtn = document.getElementById('selectBtn');
+  
+  back.style.display = 'none';
+  exitSelectMode();
+  
+  if (page === 'files') {
+    fab.style.display = 'flex';
+    title.textContent = '📚 مديري الجامعي';
+    selectBtn.style.display = 'flex';
+    if (state.currentFolder === null) state.navigationStack = [];
+    renderFiles();
+  } else if (page === 'schedule') {
+    fab.style.display = 'flex';
+    title.textContent = '📅 جدول المحاضرات';
+    selectBtn.style.display = 'none';
+    renderSchedule();
+  } else if (page === 'galaxy') {
+    fab.style.display = 'none';
+    title.textContent = '🌌 خريطة الملفات';
+    selectBtn.style.display = 'none';
+    if (galaxyAnim) { cancelAnimationFrame(galaxyAnim); galaxyAnim = null; }
+    requestAnimationFrame(() => initGalaxy());
+  }
+}
+
+function handleFab() {
+  if (state.currentPage === 'files') {
+    showFabOptions();
+  } else if (state.currentPage === 'schedule') {
+    openModal('modal-lecture');
+  }
+}
+
+function showFabOptions() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay show';
+  overlay.style.alignItems = 'flex-end';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h2>➕ إضافة جديد</h2>
+      <button class="btn btn-primary" onclick="closeFabOptions(); openModal('modal-folder')" style="margin-bottom:8px">📁 مجلد جديد</button>
+      <button class="btn btn-primary" onclick="closeFabOptions(); openModal('modal-file')" style="margin-bottom:8px; background:linear-gradient(135deg,#10b981,#059669)">📄 رفع ملف</button>
+      <button class="btn btn-secondary" onclick="closeFabOptions()">إلغاء</button>
+    </div>
+  `;
+  overlay.onclick = (e) => { if (e.target === overlay) closeFabOptions(); };
+  document.body.appendChild(overlay);
+}
+
+function closeFabOptions() {
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    if (!m.id) m.remove();
+  });
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ===== Files Management =====
+function getFoldersInCurrent() { return state.folders.filter(f => f.parent === state.currentFolder); }
+function getFilesInCurrent() { return state.files.filter(f => f.folder === state.currentFolder); }
+
+function renderFiles() {
+  renderBreadcrumb();
+  const list = document.getElementById('filesList');
+  const folders = getFoldersInCurrent();
+  const files = getFilesInCurrent();
+  
+  if (folders.length === 0 && files.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <span>📂</span>
+        <p>لا توجد ملفات هنا بعد</p>
+        <p style="margin-top:8px;font-size:12px">اضغط + لإنشاء مجلد أو رفع ملف</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '';
+  
+  folders.forEach(f => {
+    const subCount = state.folders.filter(sf => sf.parent === f.id).length + 
+                     state.files.filter(sf => sf.folder === f.id).length;
+    const selClass = state.selectMode && state.selectedFiles.has('folder-' + f.id) ? 'selected' : '';
+    html += `
+      <div class="card folder-card ${selClass}" onclick="${state.selectMode ? `toggleSelection('folder-${f.id}')` : `openFolder(${f.id})`}">
+        ${state.selectMode ? `<div class="checkbox-circle ${state.selectedFiles.has('folder-'+f.id)?'checked':''}">${state.selectedFiles.has('folder-'+f.id)?'✓':''}</div>` : ''}
+        <div class="folder-icon" style="background:linear-gradient(135deg, ${f.color}, ${adjustColor(f.color, -30)})">📁</div>
+        <div class="folder-info">
+          <h3>${escapeHtml(f.name)}</h3>
+          <p>${subCount} عنصر ${f.desc ? '• ' + escapeHtml(f.desc) : ''}</p>
+        </div>
+        ${!state.selectMode ? `<div class="folder-actions">
+          <button onclick="event.stopPropagation(); renameFolder(${f.id})">✏️</button>
+          <button onclick="event.stopPropagation(); deleteFolder(${f.id})">🗑️</button>
+        </div>` : ''}
+      </div>
+    `;
+  });
+  
+  files.forEach(f => {
+    const icons = { pdf: '📕', doc: '📘', img: '🖼️', other: '📎' };
+    const selClass = state.selectMode && state.selectedFiles.has('file-' + f.id) ? 'selected' : '';
+    html += `
+      <div class="card file-card ${selClass}" onclick="${state.selectMode ? `toggleSelection('file-${f.id}')` : `openFile(${f.id})`}">
+        ${state.selectMode ? `<div class="checkbox-circle ${state.selectedFiles.has('file-'+f.id)?'checked':''}">${state.selectedFiles.has('file-'+f.id)?'✓':''}</div>` : ''}
+        <div class="file-icon ${f.type}">${icons[f.type] || '📎'}</div>
+        <div class="file-info">
+          <h4>${escapeHtml(f.name)}</h4>
+          <p>${f.size ? formatSize(f.size) : ''} ${f.date ? '• ' + new Date(f.date).toLocaleDateString('ar') : ''}</p>
+        </div>
+        ${!state.selectMode ? `<div class="folder-actions">
+          <button onclick="event.stopPropagation(); shareSingleById(${f.id})" title="مشاركة">📤</button>
+          <button onclick="event.stopPropagation(); deleteFile(${f.id})">🗑️</button>
+        </div>` : ''}
+      </div>
+    `;
+  });
+  
+  list.innerHTML = html;
+}
+
+function renderBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  let crumbs = [{id: null, name: '🏠 الرئيسية'}];
+  let current = state.currentFolder;
+  let chain = [];
+  while (current !== null) {
+    const folder = state.folders.find(f => f.id === current);
+    if (folder) { chain.unshift({id: folder.id, name: folder.name}); current = folder.parent; }
+    else break;
+  }
+  crumbs = crumbs.concat(chain);
+  bc.innerHTML = crumbs.map((c, i) => {
+    if (i === crumbs.length - 1) return `<span style="color:var(--text)">${c.name}</span>`;
+    return `<span onclick="navigateTo(${c.id === null ? 'null' : c.id})">${c.name}</span><span class="sep">‹</span>`;
+  }).join('');
+}
+
+function navigateTo(folderId) { state.currentFolder = folderId; renderFiles(); }
+function openFolder(id) { state.navigationStack.push(state.currentFolder); state.currentFolder = id; renderFiles(); }
+function goBack() {
+  if (state.navigationStack.length > 0) { state.currentFolder = state.navigationStack.pop(); renderFiles(); }
+}
+
+function createFolder() {
+  const name = document.getElementById('folderName').value.trim();
+  if (!name) { showToast('أدخل اسم المجلد'); return; }
+  state.folders.push({
+    id: Date.now(), name,
+    desc: document.getElementById('folderDesc').value.trim(),
+    color: document.getElementById('folderColor').value,
+    parent: state.currentFolder,
+    date: new Date().toISOString()
+  });
+  saveState();
+  closeModal('modal-folder');
+  document.getElementById('folderName').value = '';
+  document.getElementById('folderDesc').value = '';
+  refreshCurrentPage();
+  showToast('✅ تم إنشاء المجلد');
+}
+
+function renameFolder(id) {
+  const folder = state.folders.find(f => f.id === id);
+  const newName = prompt('اسم جديد:', folder.name);
+  if (newName && newName.trim()) {
+    folder.name = newName.trim();
+    saveState();
+    refreshCurrentPage();
+    showToast('✅ تم التعديل');
+  }
+}
+
+function deleteFolder(id) {
+  if (!confirm('حذف هذا المجلد وجميع محتوياته؟')) return;
+  deleteFolderRecursive(id);
+  saveState();
+  refreshCurrentPage();
+  showToast('🗑️ تم الحذف');
+}
+
+function deleteFolderRecursive(id) {
+  const subFolders = state.folders.filter(f => f.parent === id);
+  subFolders.forEach(sf => deleteFolderRecursive(sf.id));
+  state.folders = state.folders.filter(f => f.id !== id);
+  state.files = state.files.filter(f => f.folder !== id);
+}
+
+function renameFile(id) {
+  const file = state.files.find(f => f.id === id);
+  const newName = prompt('اسم جديد:', file.name);
+  if (newName && newName.trim()) {
+    file.name = newName.trim();
+    saveState();
+    refreshCurrentPage();
+    showToast('✅ تم التعديل');
+  }
+}
+
+function deleteFile(id) {
+  if (!confirm('حذف هذا الملف؟')) return;
+  state.files = state.files.filter(f => f.id !== id);
+  deleteFileFromDB(id);
+  saveState();
+  refreshCurrentPage();
+  showToast('🗑️ تم الحذف');
+}
+
+// ===== File Upload & Open =====
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  state.selectedFileForUpload = file;
+  document.getElementById('uploadFileName').textContent = '✅ ' + file.name;
+  // Auto-fill name
+  const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+  document.getElementById('fileName').value = nameWithoutExt;
+}
+
+async function addFile() {
+  const nameInput = document.getElementById('fileName').value.trim();
+  
+  if (!state.selectedFileForUpload && !nameInput) {
+    showToast('اختر ملف أو أدخل اسم');
+    return;
+  }
+  
+  const file = state.selectedFileForUpload;
+  const name = nameInput || file.name;
+  
+  // Determine type
+  let type = 'other';
+  if (file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'pdf') type = 'pdf';
+    else if (['doc','docx','txt','rtf'].includes(ext)) type = 'doc';
+    else if (['jpg','jpeg','png','gif','webp','bmp'].includes(ext)) type = 'img';
+  }
+  
+  const fileId = Date.now();
+  
+  const fileMeta = {
+    id: fileId,
+    name: name,
+    type: type,
+    mimeType: file ? file.type : 'application/octet-stream',
+    size: file ? file.size : 0,
+    folder: state.currentFolder,
+    date: new Date().toISOString()
+  };
+  
+  state.files.push(fileMeta);
+  
+  // Save blob to IndexedDB
+  if (file) {
+    await saveFileToDB(fileId, file);
+  }
+  
+  saveState();
+  closeModal('modal-file');
+  document.getElementById('fileName').value = '';
+  document.getElementById('uploadFileName').textContent = '';
+  document.getElementById('fileInput').value = '';
+  state.selectedFileForUpload = null;
+  refreshCurrentPage();
+  showToast('✅ تم رفع الملف');
+}
+
+async function openFile(id) {
+  const fileMeta = state.files.find(f => f.id === id);
+  if (!fileMeta) return;
+  
+  const record = await getFileFromDB(id);
+  if (!record || !record.blob) {
+    showToast('⚠️ الملف غير موجود في التخزين');
+    return;
+  }
+  
+  const blob = record.blob;
+  const url = URL.createObjectURL(blob);
+  
+  state.currentViewFile = fileMeta;
+  
+  const viewer = document.getElementById('fileViewer');
+  const body = document.getElementById('viewerBody');
+  document.getElementById('viewerTitle').textContent = fileMeta.name;
+  
+  // Render based on type
+  if (fileMeta.mimeType === 'application/pdf') {
+    body.innerHTML = `<iframe src="${url}"></iframe>`;
+  } else if (fileMeta.type === 'img' || fileMeta.mimeType.startsWith('image/')) {
+    body.innerHTML = `<img src="${url}" alt="${escapeHtml(fileMeta.name)}">`;
+  } else if (fileMeta.mimeType.startsWith('text/')) {
+    const text = await blob.text();
+    body.innerHTML = `<pre style="width:100%;height:100%;overflow:auto;padding:16px;font-size:14px;direction:rtl;text-align:right;white-space:pre-wrap">${escapeHtml(text)}</pre>`;
+  } else {
+    body.innerHTML = `
+      <div style="text-align:center">
+        <p style="font-size:48px;margin-bottom:16px">📄</p>
+        <p style="font-size:16px;font-weight:600;margin-bottom:8px">${escapeHtml(fileMeta.name)}</p>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px">${formatSize(fileMeta.size)}</p>
+        <a href="${url}" download="${escapeHtml(fileMeta.name)}" class="btn btn-primary" style="display:inline-block;width:auto;padding:12px 32px;text-decoration:none">⬇️ تحميل الملف</a>
+      </div>
+    `;
+  }
+  
+  viewer.classList.add('show');
+}
+
+function closeViewer() {
+  document.getElementById('fileViewer').classList.remove('show');
+  document.getElementById('viewerBody').innerHTML = '';
+  state.currentViewFile = null;
+}
+
+// ===== Selection & Sharing =====
+function toggleSelectMode() {
+  state.selectMode = !state.selectMode;
+  state.selectedFiles.clear();
+  document.getElementById('selectionBar').classList.toggle('show', state.selectMode);
+  document.getElementById('selectBtn').classList.toggle('active-mode', state.selectMode);
+  updateSelectionCount();
+  renderFiles();
+}
+
+function exitSelectMode() {
+  state.selectMode = false;
+  state.selectedFiles.clear();
+  document.getElementById('selectionBar').classList.remove('show');
+  document.getElementById('selectBtn').classList.remove('active-mode');
+  renderFiles();
+}
+
+function toggleSelection(key) {
+  if (state.selectedFiles.has(key)) state.selectedFiles.delete(key);
+  else state.selectedFiles.add(key);
+  updateSelectionCount();
+  renderFiles();
+}
+
+function updateSelectionCount() {
+  document.getElementById('selectionCount').textContent = state.selectedFiles.size + ' محدد';
+}
+
+function getSelectedFileMetas() {
+  const metas = [];
+  state.selectedFiles.forEach(key => {
+    if (key.startsWith('file-')) {
+      const id = parseInt(key.replace('file-', ''));
+      const meta = state.files.find(f => f.id === id);
+      if (meta) metas.push(meta);
+    }
+  });
+  return metas;
+}
+
+async function getBlobsForFiles(metas) {
+  const blobs = [];
+  for (const meta of metas) {
+    const record = await getFileFromDB(meta.id);
+    if (record && record.blob) {
+      // Create a File object with the original name
+      const file = new File([record.blob], meta.name + '.' + getExtFromType(meta), { type: meta.mimeType });
+      blobs.push(file);
+    }
+  }
+  return blobs;
+}
+
+function getExtFromType(meta) {
+  if (meta.mimeType === 'application/pdf') return 'pdf';
+  if (meta.type === 'doc') return meta.name.split('.').pop() || 'doc';
+  if (meta.type === 'img') return meta.name.split('.').pop() || 'png';
+  return meta.name.split('.').pop() || 'bin';
+}
+
+async function shareSelected() {
+  const metas = getSelectedFileMetas();
+  if (metas.length === 0) { showToast('لم تختر ملفات'); return; }
+  
+  const blobs = await getBlobsForFiles(metas);
+  showShareSheet(blobs, metas.map(m => m.name).join('، '));
+}
+
+async function shareSingleFile() {
+  if (!state.currentViewFile) return;
+  const record = await getFileFromDB(state.currentViewFile.id);
+  if (!record || !record.blob) { showToast('⚠️ الملف غير متاح'); return; }
+  
+  const file = new File([record.blob], state.currentViewFile.name + '.' + getExtFromType(state.currentViewFile), { type: state.currentViewFile.mimeType });
+  closeViewer();
+  showShareSheet([file], state.currentViewFile.name);
+}
+
+async function shareSingleById(id) {
+  const meta = state.files.find(f => f.id === id);
+  if (!meta) return;
+  const record = await getFileFromDB(id);
+  if (!record || !record.blob) { showToast('⚠️ الملف غير متاح'); return; }
+  
+  const file = new File([record.blob], meta.name + '.' + getExtFromType(meta), { type: meta.mimeType });
+  showShareSheet([file], meta.name);
+}
+
+async function showShareSheet(files, desc) {
+  // Try native share first
+  if (navigator.share && navigator.canShare && navigator.canShare({ files })) {
+    try {
+      await navigator.share({ files, title: 'مشاركة ملفات' });
+      showToast('✅ تمت المشاركة');
+      return;
+    } catch(e) {
+      if (e.name !== 'AbortError') {
+        // Fallback to manual share options
+      } else return;
+    }
+  }
+  
+  // Manual share options - download files for manual sharing
+  const modal = document.getElementById('modal-share');
+  const options = document.getElementById('shareOptions');
+  document.getElementById('shareDesc').textContent = `${files.length} ملف - ${desc}`;
+  
+  // Download all files for manual sharing
+  options.innerHTML = `
+    <div class="share-option" onclick="downloadFilesForShare(${JSON.stringify(files.map((_,i) => i)).replace(/"/g, '&quot;')})">
+      <span class="share-icon">⬇️</span>
+      تحميل
+    </div>
+    <div class="share-option" onclick="shareViaWhatsApp()">
+      <span class="share-icon">💬</span>
+      واتساب
+    </div>
+    <div class="share-option" onclick="shareViaTelegram()">
+      <span class="share-icon">✈️</span>
+      تليجرام
+    </div>
+    <div class="share-option" onclick="shareViaEmail()">
+      <span class="share-icon">📧</span>
+      إيميل
+    </div>
+  `;
+  
+  // Store files for share actions
+  window._pendingShareFiles = files;
+  
+  closeModal('modal-share');
+  // Re-open to reset
+  setTimeout(() => openModal('modal-share'), 100);
+}
+
+async function downloadFilesForShare() {
+  const files = window._pendingShareFiles;
+  if (!files) return;
+  
+  for (const file of files) {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(url);
+    await new Promise(r => setTimeout(r, 500));
+  }
+  closeModal('modal-share');
+  showToast('✅ تم تحميل الملفات - شاركها من جهازك');
+}
+
+function shareViaWhatsApp() {
+  const files = window._pendingShareFiles;
+  // Download first then user shares from device
+  downloadFilesForShare().then(() => {
+    setTimeout(() => {
+      window.open('https://wa.me/', '_blank');
+    }, 1000);
+  });
+}
+
+function shareViaTelegram() {
+  downloadFilesForShare().then(() => {
+    setTimeout(() => {
+      window.open('https://t.me/', '_blank');
+    }, 1000);
+  });
+}
+
+function shareViaEmail() {
+  const names = window._pendingShareFiles ? window._pendingShareFiles.map(f => f.name).join('، ') : '';
+  downloadFilesForShare().then(() => {
+    setTimeout(() => {
+      window.location.href = `mailto:?subject=مشاركة ملفات&body=مرفقات: ${names}`;
+    }, 1000);
+  });
+}
+
+function deleteSelected() {
+  if (state.selectedFiles.size === 0) return;
+  if (!confirm(`حذف ${state.selectedFiles.size} عنصر؟`)) return;
+  
+  state.selectedFiles.forEach(async key => {
+    if (key.startsWith('file-')) {
+      const id = parseInt(key.replace('file-', ''));
+      state.files = state.files.filter(f => f.id !== id);
+      await deleteFileFromDB(id);
+    } else if (key.startsWith('folder-')) {
+      const id = parseInt(key.replace('folder-', ''));
+      deleteFolderRecursive(id);
+    }
+  });
+  
+  saveState();
+  exitSelectMode();
+  refreshCurrentPage();
+  showToast('🗑️ تم الحذف');
+}
+
+// ===== Schedule =====
+function renderSchedule() {
+  const list = document.getElementById('scheduleList');
+  const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+  
+  if (state.lectures.length === 0) {
+    list.innerHTML = `<div class="empty-state"><span>📅</span><p>لا توجد محاضرات بعد</p><p style="margin-top:8px;font-size:12px">اضغط + لإضافة محاضرة</p></div>`;
+    return;
+  }
+  
+  // === Build time slots from data ===
+  const timeSet = new Set();
+  state.lectures.forEach(l => { if (l.timeFrom) timeSet.add(l.timeFrom); if (l.timeTo) timeSet.add(l.timeTo); });
+  const timeSlots = [...timeSet].sort();
+  if (timeSlots.length < 2) timeSlots.push('08:00', '09:30');
+  
+  // Subject colors
+  const subjectColors = {};
+  const palette = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#f97316','#14b8a6','#6366f1'];
+  let ci = 0;
+  state.lectures.forEach(l => { if (!subjectColors[l.subject]) subjectColors[l.subject] = palette[ci++ % palette.length]; });
+  
+  // === GRID ===
+  let gridHtml = `<div class="schedule-grid-wrapper"><div class="schedule-grid" style="grid-template-columns: 50px repeat(${days.length}, 1fr)">`;
+  gridHtml += `<div class="sg-header" style="background:var(--text)">الوقت</div>`;
+  days.forEach(d => gridHtml += `<div class="sg-header">${d}</div>`);
+  
+  for (let t = 0; t < timeSlots.length - 1; t++) {
+    const from = timeSlots[t];
+    gridHtml += `<div class="sg-time-label">${from}</div>`;
+    days.forEach(day => {
+      const lec = state.lectures.find(l => l.day === day && l.timeFrom === from);
+      if (lec) {
+        const c = subjectColors[lec.subject];
+        gridHtml += `<div class="sg-cell" onclick="editLecture(${lec.id})"><div class="sg-lecture" style="background:${c}"><span class="sg-subj">${escapeHtml(lec.subject)}</span><span class="sg-room">${escapeHtml(lec.room||'')}</span></div></div>`;
+      } else {
+        gridHtml += `<div class="sg-cell empty" onclick="quickAddLecture('${day}','${from}')"></div>`;
+      }
+    });
+  }
+  gridHtml += '</div></div>';
+  
+  // === LIST ===
+  let listHtml = `<div class="schedule-list-title">📋 كل المحاضرات</div>`;
+  days.forEach(day => {
+    const dayLectures = state.lectures.filter(l => l.day === day).sort((a,b) => (a.timeFrom||'').localeCompare(b.timeFrom||''));
+    if (dayLectures.length === 0) return;
+    listHtml += `<div class="schedule-day"><h3>${day}</h3>`;
+    dayLectures.forEach(l => {
+      const c = subjectColors[l.subject];
+      listHtml += `<div class="lecture-card" style="border-right-color:${c}"><div class="lecture-time" style="color:${c}">${l.timeFrom||'--:--'}<br><small>${l.timeTo||''}</small></div><div class="lecture-details"><h4>${escapeHtml(l.subject)}</h4><p>${escapeHtml(l.doctor)} ${l.room?'• '+escapeHtml(l.room):''}</p></div><button class="lecture-delete" onclick="deleteLecture(${l.id})">✕</button></div>`;
+    });
+    listHtml += '</div>';
+  });
+  
+  list.innerHTML = gridHtml + listHtml;
+}
+
+function quickAddLecture(day, time) {
+  openModal('modal-lecture');
+  document.getElementById('lectureDay').value = day;
+  document.getElementById('lectureTimeFrom').value = time;
+}
+
+function editLecture(id) {
+  const l = state.lectures.find(lec => lec.id === id);
+  if (!l) return;
+  openModal('modal-lecture');
+  document.getElementById('lectureSubject').value = l.subject;
+  document.getElementById('lectureDoctor').value = l.doctor;
+  document.getElementById('lectureDay').value = l.day;
+  document.getElementById('lectureTimeFrom').value = l.timeFrom || '';
+  document.getElementById('lectureTimeTo').value = l.timeTo || '';
+  document.getElementById('lectureRoom').value = l.room || '';
+  const btn = document.querySelector('#modal-lecture .btn-primary');
+  btn.textContent = '💾 حفظ التعديل';
+  btn.onclick = () => {
+    l.subject = document.getElementById('lectureSubject').value.trim();
+    l.doctor = document.getElementById('lectureDoctor').value.trim();
+    l.day = document.getElementById('lectureDay').value;
+    l.timeFrom = document.getElementById('lectureTimeFrom').value;
+    l.timeTo = document.getElementById('lectureTimeTo').value;
+    l.room = document.getElementById('lectureRoom').value.trim();
+    if (!l.subject) { showToast('أدخل اسم المادة'); return; }
+    saveState();
+    closeModal('modal-lecture');
+    btn.textContent = 'إضافة';
+    btn.onclick = addLecture;
+    ['lectureSubject','lectureDoctor','lectureTimeFrom','lectureTimeTo','lectureRoom'].forEach(id => document.getElementById(id).value = '');
+    refreshCurrentPage();
+    showToast('✅ تم التعديل');
+  };
+}
+
+function addLecture() {
+  const subject = document.getElementById('lectureSubject').value.trim();
+  if (!subject) { showToast('أدخل اسم المادة'); return; }
+  state.lectures.push({
+    id: Date.now(), subject,
+    doctor: document.getElementById('lectureDoctor').value.trim(),
+    day: document.getElementById('lectureDay').value,
+    timeFrom: document.getElementById('lectureTimeFrom').value,
+    timeTo: document.getElementById('lectureTimeTo').value,
+    room: document.getElementById('lectureRoom').value.trim()
+  });
+  saveState();
+  closeModal('modal-lecture');
+  ['lectureSubject','lectureDoctor','lectureTimeFrom','lectureTimeTo','lectureRoom'].forEach(id => document.getElementById(id).value = '');
+  refreshCurrentPage();
+  showToast('✅ تمت إضافة المحاضرة');
+}
+
+function deleteLecture(id) {
+  if (!confirm('حذف؟')) return;
+  state.lectures = state.lectures.filter(l => l.id !== id);
+  saveState();
+  refreshCurrentPage();
+  showToast('🗑️ تم الحذف');
+}
+
+// ===== Galaxy View =====
+let galaxyAnim = null;
+let galaxyNodes = [];
+let galaxyEdges = [];
+let galaxyOffset = { x: 0, y: 0 };
+let galaxyScale = 1;
+let galaxySelectedNode = null;
+let galaxyPrevOffset = { x: 0, y: 0 };
+let galaxyPrevScale = 1;
+let galaxyWaves = [];
+let gMouseDown = false, gMouseStart = { x: 0, y: 0 }, gMouseStartOffset = null, gMoved = false;
+
+function initGalaxy() {
+  const canvas = document.getElementById('galaxy-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = canvas.offsetHeight * 2;
+  ctx.scale(2, 2);
+  const w = canvas.offsetWidth;
+  const h = canvas.offsetHeight;
+  
+  galaxyOffset = { x: 0, y: 0 };
+  galaxyPrevOffset = { x: 0, y: 0 };
+  galaxyScale = 1;
+  galaxyPrevScale = 1;
+  galaxyWaves = [];
+  galaxyNodes = [];
+  galaxyEdges = [];
+  galaxySelectedNode = null;
+  
+  let nodes = galaxyNodes, edges = galaxyEdges;
+  const rootFolders = state.folders.filter(f => f.parent === null);
+  const ROOT_R = 10, SUB_R = 7, FILE_R = 4, GLOW_R = 1.6;
+  
+  rootFolders.forEach((folder, i) => {
+    const angle = (i / Math.max(rootFolders.length, 1)) * Math.PI * 2;
+    const r = Math.min(w, h) * 0.28;
+    nodes.push({ id: 'f'+folder.id, type: 'root-folder', label: folder.name, color: folder.color, refId: folder.id,
+      x: w/2 + Math.cos(angle)*r, y: h/2 + Math.sin(angle)*r, radius: ROOT_R, pulse: Math.random()*Math.PI*2 });
+    state.folders.filter(f => f.parent === folder.id).forEach((sf, j) => {
+      const sAngle = angle + (j - 1) * 0.6;
+      const prev = nodes[nodes.length-1];
+      nodes.push({ id: 'f'+sf.id, type: 'sub-folder', label: sf.name, color: sf.color, refId: sf.id,
+        x: prev.x + Math.cos(sAngle)*55, y: prev.y + Math.sin(sAngle)*55, radius: SUB_R, pulse: Math.random()*Math.PI*2 });
+      edges.push({ from: 'f'+folder.id, to: 'f'+sf.id });
+      state.files.filter(fi => fi.folder === sf.id).forEach((file, k) => {
+        const fAngle = sAngle + (k-1)*0.45;
+        const prev2 = nodes[nodes.length-1];
+        nodes.push({ id: 'file'+file.id, type: 'file', label: file.name, color: '#10b981', refId: file.id,
+          x: prev2.x + Math.cos(fAngle)*35, y: prev2.y + Math.sin(fAngle)*35, radius: FILE_R, pulse: Math.random()*Math.PI*2 });
+        edges.push({ from: 'f'+sf.id, to: 'file'+file.id });
+      });
+    });
+    state.files.filter(fi => fi.folder === folder.id).forEach((file, k) => {
+      const fAngle = angle + (k-1)*0.45;
+      const prev = nodes[nodes.length-1];
+      nodes.push({ id: 'file'+file.id, type: 'file', label: file.name, color: '#10b981', refId: file.id,
+        x: prev.x + Math.cos(fAngle)*50, y: prev.y + Math.sin(fAngle)*50, radius: FILE_R, pulse: Math.random()*Math.PI*2 });
+      edges.push({ from: 'f'+folder.id, to: 'file'+file.id });
+    });
+  });
+  
+  if (nodes.length === 0) {
+    nodes.push({ id: 'p1', type: 'root-folder', label: 'ابدأ بإنشاء مجلدات', color: '#f59e0b', refId: null, x: w/2, y: h/2, radius: ROOT_R, pulse: 0 });
+  }
+  
+  // Replace canvas to remove old listeners
+  const newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  const cvs = newCanvas;
+  const cx = cvs.getContext('2d');
+  cvs.width = cvs.offsetWidth * 2;
+  cvs.height = cvs.offsetHeight * 2;
+  cx.scale(2, 2);
+  
+  // === Touch Events (smooth pan & zoom) ===
+  let activeTouches = new Map(); // id -> {x, y}
+  let prevCenter = null;
+  let prevDist = 0;
+  let tapStart = null;
+  let tapMoved = false;
+  
+  cvs.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      activeTouches.set(t.identifier, { x: t.clientX, y: t.clientY });
+    }
+    // Recalculate reference from current touches
+    const pts = [...activeTouches.values()];
+    if (pts.length === 1) {
+      prevCenter = { x: pts[0].x, y: pts[0].y };
+      prevDist = 0;
+      tapStart = { x: pts[0].x, y: pts[0].y };
+      tapMoved = false;
+    } else if (pts.length >= 2) {
+      prevCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      prevDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+      tapStart = null; // not a tap anymore
+    }
+  }, { passive: false });
+  
+  cvs.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    for (const t of e.changedTouches) {
+      activeTouches.set(t.identifier, { x: t.clientX, y: t.clientY });
+    }
+    const pts = [...activeTouches.values()];
+    const rect = cvs.getBoundingClientRect();
+    
+    if (pts.length === 1) {
+      // Pan
+      const cur = pts[0];
+      if (tapStart && (Math.abs(cur.x - tapStart.x) > 8 || Math.abs(cur.y - tapStart.y) > 8)) {
+        tapMoved = true;
+      }
+      if (prevCenter) {
+        const dx = cur.x - prevCenter.x;
+        const dy = cur.y - prevCenter.y;
+        galaxyOffset.x += dx / galaxyScale;
+        galaxyOffset.y += dy / galaxyScale;
+      }
+      prevCenter = { x: cur.x, y: cur.y };
+      prevDist = 0;
+    } else if (pts.length >= 2) {
+      // Pinch zoom + pan (smooth, relative)
+      const curCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      const curDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+      
+      if (prevDist > 0 && prevCenter) {
+        // Zoom: scale relative to center, zoom toward pinch midpoint
+        const zoomFactor = curDist / prevDist;
+        const newScale = Math.max(0.3, Math.min(4, galaxyScale * zoomFactor));
+        
+        // World position of pinch center (should stay fixed)
+        const midScreenX = curCenter.x - rect.left;
+        const midScreenY = curCenter.y - rect.top;
+        const worldX = midScreenX / galaxyScale - galaxyOffset.x;
+        const worldY = midScreenY / galaxyScale - galaxyOffset.y;
+        
+        galaxyScale = newScale;
+        
+        // Adjust offset so world point stays under pinch center
+        galaxyOffset.x = midScreenX / galaxyScale - worldX;
+        galaxyOffset.y = midScreenY / galaxyScale - worldY;
+        
+        // Pan: shift by center movement
+        const panDx = (curCenter.x - prevCenter.x) / galaxyScale;
+        const panDy = (curCenter.y - prevCenter.y) / galaxyScale;
+        galaxyOffset.x += panDx;
+        galaxyOffset.y += panDy;
+      }
+      
+      prevCenter = curCenter;
+      prevDist = curDist;
+      tapStart = null;
+    }
+  }, { passive: false });
+  
+  cvs.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    // Handle tap detection
+    if (!tapMoved && tapStart && e.changedTouches.length === 1 && activeTouches.size <= 1) {
+      const t = e.changedTouches[0];
+      const rect = cvs.getBoundingClientRect();
+      const sx = t.clientX - rect.left;
+      const sy = t.clientY - rect.top;
+      handleGalaxyClick(sx / galaxyScale - galaxyOffset.x, sy / galaxyScale - galaxyOffset.y);
+    }
+    // Remove ended touches
+    for (const t of e.changedTouches) {
+      activeTouches.delete(t.identifier);
+    }
+    // Update references for remaining touches
+    const pts = [...activeTouches.values()];
+    if (pts.length === 1) {
+      prevCenter = { x: pts[0].x, y: pts[0].y };
+      prevDist = 0;
+    } else if (pts.length >= 2) {
+      prevCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      prevDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    } else {
+      prevCenter = null;
+      prevDist = 0;
+      tapStart = null;
+    }
+  }, { passive: false });
+  
+  cvs.addEventListener('touchcancel', (e) => {
+    for (const t of e.changedTouches) activeTouches.delete(t.identifier);
+    const pts = [...activeTouches.values()];
+    if (pts.length === 1) { prevCenter = { x: pts[0].x, y: pts[0].y }; prevDist = 0; }
+    else if (pts.length >= 2) { prevCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }; prevDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y); }
+    else { prevCenter = null; prevDist = 0; tapStart = null; }
+  }, { passive: false });
+  
+  // === Mouse Events ===
+  cvs.addEventListener('mousedown', (e) => {
+    gMouseDown = true;
+    gMouseStart = { x: e.clientX, y: e.clientY };
+    gMouseStartOffset = { ...galaxyOffset };
+    gMoved = false;
+    cvs.style.cursor = 'grabbing';
+  });
+  cvs.addEventListener('mousemove', (e) => {
+    if (gMouseDown) {
+      const dx = e.clientX - gMouseStart.x;
+      const dy = e.clientY - gMouseStart.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) gMoved = true;
+      galaxyOffset.x = gMouseStartOffset.x + dx / galaxyScale;
+      galaxyOffset.y = gMouseStartOffset.y + dy / galaxyScale;
+    } else {
+      const rect = cvs.getBoundingClientRect();
+      const worldX = (e.clientX - rect.left) / galaxyScale - galaxyOffset.x;
+      const worldY = (e.clientY - rect.top) / galaxyScale - galaxyOffset.y;
+      cvs.style.cursor = nodes.find(n => Math.hypot(n.x - worldX, n.y - worldY) < n.radius + 4) ? 'pointer' : 'grab';
+    }
+  });
+  cvs.addEventListener('mouseup', (e) => {
+    if (!gMoved && gMouseDown) {
+      const rect = cvs.getBoundingClientRect();
+      handleGalaxyClick((e.clientX - rect.left) / galaxyScale - galaxyOffset.x, (e.clientY - rect.top) / galaxyScale - galaxyOffset.y);
+    }
+    gMouseDown = false;
+    cvs.style.cursor = 'grab';
+  });
+  cvs.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = cvs.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const wx = mx / galaxyScale - galaxyOffset.x;
+    const wy = my / galaxyScale - galaxyOffset.y;
+    galaxyScale = Math.max(0.3, Math.min(4, galaxyScale * (e.deltaY > 0 ? 0.9 : 1.1)));
+    galaxyOffset.x = mx / galaxyScale - wx;
+    galaxyOffset.y = my / galaxyScale - wy;
+  }, { passive: false });
+  cvs.style.cursor = 'grab';
+  
+  // === Click handler ===
+  function handleGalaxyClick(worldX, worldY) {
+    const hit = nodes.find(n => Math.hypot(n.x - worldX, n.y - worldY) < n.radius + 6);
+    if (!hit) return;
+    galaxySelectedNode = hit;
+    const icon = hit.type === 'file' ? '📄' : '📁';
+    const typeLabel = hit.type === 'file' ? 'ملف' : hit.type === 'root-folder' ? 'مجلد رئيسي' : 'مجلد فرعي';
+    document.getElementById('popupIcon').textContent = icon;
+    document.getElementById('popupTitle').textContent = hit.label;
+    document.getElementById('popupDesc').textContent = `${typeLabel} — هل تريد الانتقال لموقعه؟`;
+    document.getElementById('galaxyPopup').classList.add('show');
+  }
+  
+  // === Animation ===
+  let time = 0;
+  function animate() {
+    cx.clearRect(0, 0, w, h);
+    time += 0.02;
+    
+    // Stars (fixed background)
+    for (let i = 0; i < 40; i++) {
+      const sx = (Math.sin(i*123.456)*0.5+0.5)*w;
+      const sy = (Math.cos(i*789.012)*0.5+0.5)*h;
+      cx.fillStyle = `rgba(255,255,255,${0.2+Math.sin(time+i)*0.15})`;
+      cx.beginPath(); cx.arc(sx, sy, 0.8, 0, Math.PI*2); cx.fill();
+    }
+    
+    // Apply pan/zoom transform
+    cx.save();
+    cx.scale(galaxyScale, galaxyScale);
+    cx.translate(galaxyOffset.x, galaxyOffset.y);
+    
+    // === Camera velocities ===
+    const camVx = galaxyOffset.x - galaxyPrevOffset.x;
+    const camVy = galaxyOffset.y - galaxyPrevOffset.y;
+    galaxyPrevOffset.x = galaxyOffset.x;
+    galaxyPrevOffset.y = galaxyOffset.y;
+    
+    // === Zoom wave detection ===
+    const scaleDelta = Math.abs(galaxyScale - galaxyPrevScale);
+    if (scaleDelta > 0.003) {
+      galaxyWaves.push({ origin: 0, speed: 0.06, amplitude: Math.min(scaleDelta * 4, 2.5) });
+      if (galaxyWaves.length > 4) galaxyWaves.shift();
+    }
+    galaxyPrevScale = galaxyScale;
+    
+    // === Physics constants ===
+    const SPRING = 0.04;
+    const DAMPING = 0.85;
+    const FOLLOW = 0.012;  // horizontal follow (very subtle)
+    const RANDOM_Y = 0.04; // vertical random bounce (very subtle)
+    
+    nodes.forEach(n => {
+      // Init on first frame
+      if (n.vx === undefined) { n.vx = 0; n.vy = 0; n.ox = 0; n.oy = 0; }
+      n.pulse += 0.02;
+      
+      const isDragging = Math.abs(camVx) > 1.0 || Math.abs(camVy) > 1.0;
+      
+      // ── HORIZONTAL: follow camera direction ──
+      if (isDragging) {
+        n.vx += camVx * FOLLOW;
+      }
+      // Spring back to 0
+      n.vx += -n.ox * SPRING;
+      n.vx *= DAMPING;
+      
+      // ── VERTICAL: random bounce + spring back ──
+      if (isDragging) {
+        n.vy += (Math.random() - 0.5) * RANDOM_Y;
+      }
+      n.vy += -n.oy * SPRING;
+      n.vy *= DAMPING;
+      
+      // Update offsets
+      n.ox += n.vx;
+      n.oy += n.vy;
+      
+      // ── WAVE (zoom pulse) ──
+      let waveOff = 0;
+      if (!n._distFromCenter) {
+        n._distFromCenter = Math.hypot(n.x - w/2, n.y - h/2);
+      }
+      for (const wave of galaxyWaves) {
+        const d = Math.abs(n._distFromCenter - wave.origin);
+        if (d < 15) {
+          waveOff += Math.sin(d * 0.4) * wave.amplitude * Math.max(0, 1 - d * 0.08);
+        }
+      }
+      
+      // ── Ambient float ──
+      const ax = Math.sin(time + n.pulse) * 0.08;
+      const ay = Math.cos(time + n.pulse * 1.3) * 0.08;
+      
+      // ── Final position ──
+      n._rx = n.x + n.ox + ax;
+      n._ry = n.y + n.oy + ay + waveOff;
+    });
+    
+    // Advance waves
+    galaxyWaves.forEach(w => w.origin += w.speed);
+    galaxyWaves = galaxyWaves.filter(w => w.origin < Math.max(w, h));
+    
+    // Edges
+    edges.forEach(e => {
+      const from = nodes.find(n => n.id === e.from);
+      const to = nodes.find(n => n.id === e.to);
+      if (!from || !to) return;
+      cx.beginPath(); cx.moveTo(from._rx, from._ry); cx.lineTo(to._rx, to._ry);
+      const grad = cx.createLinearGradient(from._rx, from._ry, to._rx, to._ry);
+      grad.addColorStop(0, from.color + 'AA');
+      grad.addColorStop(1, to.color + 'AA');
+      cx.strokeStyle = grad;
+      cx.lineWidth = 1.2 / galaxyScale;
+      cx.stroke();
+      const t = (Math.sin(time*1.5 + e.from.length) * 0.5 + 0.5);
+      cx.beginPath(); cx.arc(from._rx + (to._rx - from._rx)*t, from._ry + (to._ry - from._ry)*t, 1.5/galaxyScale, 0, Math.PI*2);
+      cx.fillStyle = 'rgba(255,255,255,0.9)'; cx.fill();
+    });
+    
+    // Nodes
+    nodes.forEach(n => {
+      const pr = n.radius + Math.sin(n.pulse) * 0.8;
+      const sel = galaxySelectedNode && galaxySelectedNode.id === n.id;
+      const glow = cx.createRadialGradient(n._rx, n._ry, pr*0.5, n._rx, n._ry, pr * GLOW_R);
+      glow.addColorStop(0, n.color + (sel ? '60' : '30'));
+      glow.addColorStop(1, 'transparent');
+      cx.fillStyle = glow;
+      cx.beginPath(); cx.arc(n._rx, n._ry, pr * GLOW_R, 0, Math.PI*2); cx.fill();
+      cx.beginPath(); cx.arc(n._rx, n._ry, pr, 0, Math.PI*2);
+      const ng = cx.createRadialGradient(n._rx-pr*0.3, n._ry-pr*0.3, 0, n._rx, n._ry, pr);
+      ng.addColorStop(0, '#ffffff'); ng.addColorStop(0.4, n.color); ng.addColorStop(1, adjustColor(n.color, -30));
+      cx.fillStyle = ng; cx.fill();
+      cx.strokeStyle = sel ? '#ffffff' : n.color;
+      cx.lineWidth = (sel ? 2 : 0.5) / galaxyScale;
+      cx.stroke();
+      cx.fillStyle = 'rgba(255,255,255,0.85)';
+      cx.font = n.type === 'file' ? '8px sans-serif' : 'bold 9px sans-serif';
+      cx.textAlign = 'center'; cx.textBaseline = 'top';
+      cx.fillText(n.label, n._rx, n._ry + pr + 4);
+    });
+    
+    cx.restore();
+    galaxyAnim = requestAnimationFrame(animate);
+  }
+  if (galaxyAnim) cancelAnimationFrame(galaxyAnim);
+  animate();
+}
+
+function closeGalaxyPopup() {
+  document.getElementById('galaxyPopup').classList.remove('show');
+  galaxySelectedNode = null;
+}
+
+function galaxyNavigate() {
+  const node = galaxySelectedNode;
+  closeGalaxyPopup();
+  if (!node || !node.refId) return;
+  
+  let targetFolder = null;
+  if (node.type === 'file') {
+    const file = state.files.find(f => f.id === node.refId);
+    if (file) targetFolder = file.folder;
+  } else {
+    targetFolder = node.refId;
+  }
+  
+  if (targetFolder === undefined) return;
+  state.currentFolder = targetFolder;
+  
+  // Build navigation stack
+  const chain = [];
+  let cur = targetFolder;
+  while (cur !== null) {
+    chain.unshift(cur);
+    const folder = state.folders.find(f => f.id === cur);
+    cur = folder ? folder.parent : null;
+  }
+  state.navigationStack = chain;
+  
+  if (galaxyAnim) { cancelAnimationFrame(galaxyAnim); galaxyAnim = null; }
+  state.currentPage = 'files';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-files').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === 0));
+  document.getElementById('fabBtn').style.display = 'flex';
+  document.getElementById('headerTitle').textContent = '📚 مديري الجامعي';
+  document.getElementById('selectBtn').style.display = 'flex';
+  document.getElementById('backBtn').style.display = 'none';
+  renderFiles();
+  showToast(`📂 ${node.type === 'file' ? 'تم الانتقال لموقع الملف' : 'تم الانتقال إلى: ' + node.label}`);
+}
+
+// ===== Helpers =====
+function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
+function adjustColor(hex, amt) {
+  let r = parseInt(hex.slice(1,3),16)+amt, g = parseInt(hex.slice(3,5),16)+amt, b = parseInt(hex.slice(5,7),16)+amt;
+  return '#'+[r,g,b].map(c=>Math.max(0,Math.min(255,c)).toString(16).padStart(2,'0')).join('');
+}
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+function handleSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) { renderFiles(); return; }
+  const folders = state.folders.filter(f => f.name.toLowerCase().includes(q));
+  const files = state.files.filter(f => f.name.toLowerCase().includes(q));
+  const list = document.getElementById('filesList');
+  if (folders.length === 0 && files.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span>🔍</span><p>لا توجد نتائج</p></div>';
+    return;
+  }
+  let html = '';
+  folders.forEach(f => {
+    html += `<div class="card folder-card" onclick="openFolder(${f.id})">
+      <div class="folder-icon" style="background:linear-gradient(135deg,${f.color},${adjustColor(f.color,-30)})">📁</div>
+      <div class="folder-info"><h3>${escapeHtml(f.name)}</h3><p>مجلد</p></div></div>`;
+  });
+  files.forEach(f => {
+    const icons = { pdf: '📕', doc: '📘', img: '🖼️', other: '📎' };
+    html += `<div class="card file-card" onclick="openFile(${f.id})">
+      <div class="file-icon ${f.type}">${icons[f.type]||'📎'}</div>
+      <div class="file-info"><h4>${escapeHtml(f.name)}</h4><p>${formatSize(f.size||0)}</p></div></div>`;
+  });
+  list.innerHTML = html;
+}
+
+// ===== Refresh current page =====
+function refreshCurrentPage() {
+  if (state.currentPage === 'files') renderFiles();
+  else if (state.currentPage === 'schedule') renderSchedule();
+  else if (state.currentPage === 'galaxy') {
+    if (galaxyAnim) { cancelAnimationFrame(galaxyAnim); galaxyAnim = null; }
+    initGalaxy();
+  }
+}
+
+// ===== Test Data =====
+function loadTestData(size) {
+  closeModal('modal-testdata');
+  
+  let id = 1000;
+  const nextId = () => ++id;
+  
+  // Clear existing
+  state.folders = [];
+  state.files = [];
+  state.lectures = [];
+  
+  if (size === 'small') {
+    // === 4 Subjects ===
+    const subjects = [
+      { name: 'الفيزياء', color: '#3b82f6', desc: 'المحاضرات والفروض' },
+      { name: 'الرياضيات', color: '#ef4444', desc: 'جبر وتفاضل' },
+      { name: 'البرمجة', color: '#10b981', desc: 'هياكل بيانات وخوارزميات' },
+      { name: 'اللغة الإنجليزية', color: '#f59e0b', desc: 'قواعد وكتابة' }
+    ];
+    
+    const subjectIds = {};
+    subjects.forEach(s => {
+      const fid = nextId();
+      subjectIds[s.name] = fid;
+      state.folders.push({ id: fid, name: s.name, color: s.color, desc: s.desc, parent: null, date: new Date().toISOString() });
+    });
+    
+    // Sub-folders
+    const subFolders = [
+      { name: 'المحاضرات', parent: subjectIds['الفيزياء'], color: '#60a5fa' },
+      { name: 'الفروض', parent: subjectIds['الفيزياء'], color: '#93c5fd' },
+      { name: 'ملخصات', parent: subjectIds['الرياضيات'], color: '#fca5a5' },
+      { name: 'مشاريع', parent: subjectIds['البرمجة'], color: '#6ee7b7' }
+    ];
+    const subIds = {};
+    subFolders.forEach(sf => {
+      const fid = nextId();
+      subIds[sf.name] = fid;
+      state.folders.push({ id: fid, name: sf.name, color: sf.color, desc: '', parent: sf.parent, date: new Date().toISOString() });
+    });
+    
+    // Files
+    const files = [
+      { name: 'محاضرة 1 - الحركة', type: 'pdf', folder: subIds['المحاضرات'], size: 245000 },
+      { name: 'محاضرة 2 - القوى', type: 'pdf', folder: subIds['المحاضرات'], size: 312000 },
+      { name: 'فرض 1 - حل', type: 'doc', folder: subIds['الفروض'], size: 89000 },
+      { name: 'ملخص التفاضل', type: 'pdf', folder: subIds['ملخصات'], size: 178000 },
+      { name: 'مشروعsort', type: 'doc', folder: subIds['مشاريع'], size: 56000 },
+      { name: 'محاضرة - Arrays', type: 'pdf', folder: subjectIds['البرمجة'], size: 420000 },
+      { name: 'قواعد Grammar', type: 'doc', folder: subjectIds['اللغة الإنجليزية'], size: 134000 },
+      { name: 'معادلات تفاضلية', type: 'pdf', folder: subjectIds['الرياضيات'], size: 267000 }
+    ];
+    files.forEach(f => {
+      state.files.push({ id: nextId(), name: f.name, type: f.type, folder: f.folder, mimeType: f.type === 'pdf' ? 'application/pdf' : 'application/msword', size: f.size, date: new Date().toISOString() });
+    });
+    
+    // Lectures
+    state.lectures = [
+      { id: nextId(), subject: 'الفيزياء', doctor: 'د. خالد العمري', day: 'السبت', timeFrom: '08:00', timeTo: '09:30', room: 'قاعة 101' },
+      { id: nextId(), subject: 'الرياضيات', doctor: 'د. سارة أحمد', day: 'السبت', timeFrom: '10:00', timeTo: '11:30', room: 'قاعة 205' },
+      { id: nextId(), subject: 'البرمجة', doctor: 'د. محمد الحسن', day: 'الأحد', timeFrom: '08:00', timeTo: '10:00', room: 'معمل 3' },
+      { id: nextId(), subject: 'اللغة الإنجليزية', doctor: 'د. ليلى عبدالله', day: 'الاثنين', timeFrom: '09:00', timeTo: '10:30', room: 'قاعة 302' },
+      { id: nextId(), subject: 'الفيزياء', doctor: 'د. خالد العمري', day: 'الأربعاء', timeFrom: '11:00', timeTo: '12:30', room: 'معمل فيزياء' }
+    ];
+    
+  } else {
+    // === LARGE: 8 Subjects ===
+    const subjects = [
+      { name: 'الفيزياء', color: '#3b82f6', desc: 'الميكانيكا والكهرباء' },
+      { name: 'الرياضيات', color: '#ef4444', desc: 'تحليل وجبر خطي' },
+      { name: 'البرمجة', color: '#10b981', desc: 'C++ و Java' },
+      { name: 'اللغة الإنجليزية', color: '#f59e0b', desc: 'Academic Writing' },
+      { name: 'الكيمياء', color: '#8b5cf6', desc: 'عضوية وغير عضوية' },
+      { name: 'الإحصاء', color: '#ec4899', desc: 'احتمالات وتوزيعات' },
+      { name: 'شبكات الحاسب', color: '#06b6d4', desc: 'TCP/IP وبروتوكولات' },
+      { name: 'قواعد البيانات', color: '#f97316', desc: 'SQL وتصميم' }
+    ];
+    
+    const subjectIds = {};
+    subjects.forEach(s => {
+      const fid = nextId();
+      subjectIds[s.name] = fid;
+      state.folders.push({ id: fid, name: s.name, color: s.color, desc: s.desc, parent: null, date: new Date().toISOString() });
+    });
+    
+    // Sub-folders for each subject
+    const subDefs = [
+      ['محاضرات', 'فروض', 'ملخصات', 'مراجع'],
+      ['محاضرات', 'تمارين', 'امتحانات سابقة'],
+      ['محاضرات', 'مشاريع', 'تطبيقات', ' Labs'],
+      ['محاضرات', 'مقالات', 'ترجمات'],
+      ['محاضرات', 'تجارب', 'تقارير'],
+      ['محاضرات', 'تمارين', 'ملخصات'],
+      ['محاضرات', 'Labs', 'مشاريع'],
+      ['محاضرات', 'تمارين SQL', 'مشاريع']
+    ];
+    
+    const subIds = {};
+    subjects.forEach((s, si) => {
+      const subs = subDefs[si];
+      subs.forEach(subName => {
+        const fid = nextId();
+        subIds[s.name + '/' + subName] = fid;
+        state.folders.push({ id: fid, name: subName, color: adjustColor(s.color, 40), desc: '', parent: subjectIds[s.name], date: new Date().toISOString() });
+      });
+    });
+    
+    // Files - 25+
+    const fileTemplates = {
+      'الفيزياء': [
+        ['محاضرات', 'محاضرة 1 - الحركة الخطية', 'pdf', 340000],
+        ['محاضرات', 'محاضرة 2 - قوانين نيوتن', 'pdf', 290000],
+        ['محاضرات', 'محاضرة 3 - الشغل والطاقة', 'pdf', 315000],
+        ['فروض', 'فرض 1 - فصل أول', 'doc', 98000],
+        ['فروض', 'فرض 2 - فصل ثاني', 'doc', 112000],
+        ['ملخصات', 'ملخص الفصل 1-3', 'pdf', 180000],
+        ['مراجع', 'كتاب هاليدا - فصل 1', 'pdf', 5200000]
+      ],
+      'الرياضيات': [
+        ['محاضرات', 'مصفوفات - محاضرة 1', 'pdf', 265000],
+        ['محاضرات', 'تفاضل تكامل - محاضرة 4', 'pdf', 310000],
+        ['تمارين', 'ورقة تمارين 1', 'doc', 78000],
+        ['تمارين', 'ورقة تمارين 2', 'doc', 82000],
+        ['امتحانات سابقة', 'امتحان 2024', 'pdf', 450000],
+        ['امتحانات سابقة', 'امتحان 2023', 'pdf', 420000]
+      ],
+      'البرمجة': [
+        ['محاضرات', 'Arrays & Strings', 'pdf', 380000],
+        ['محاضرات', 'Linked Lists', 'pdf', 410000],
+        ['محاضرات', 'Trees & Graphs', 'pdf', 520000],
+        ['مشاريع', 'مشروع Sorting Visualizer', 'doc', 67000],
+        ['مشاريع', 'مشروع Calculator', 'doc', 45000],
+        ['تطبيقات', 'TicTacToe.java', 'other', 12000],
+        [' Labs', 'Lab 1 - Introduction', 'pdf', 195000],
+        [' Labs', 'Lab 2 - Pointers', 'pdf', 230000]
+      ],
+      'اللغة الإنجليزية': [
+        ['محاضرات', 'Lecture - Essay Writing', 'pdf', 275000],
+        ['مقالات', 'My Essay Draft', 'doc', 34000],
+        ['ترجمات', 'ترجمة مقالة علمية', 'doc', 56000]
+      ],
+      'الكيمياء': [
+        ['محاضرات', 'الروابط الكيميائية', 'pdf', 290000],
+        ['محاضرات', 'التفاعلات العضوية', 'pdf', 350000],
+        ['تجارب', 'تجربة 1 - التقطير', 'img', 1200000],
+        ['تقارير', 'تقرير تجربة 1', 'doc', 145000]
+      ],
+      'الإحصاء': [
+        ['محاضرات', 'التوزيع الطبيعي', 'pdf', 280000],
+        ['تمارين', 'تمارين فصل 3', 'doc', 67000],
+        ['ملخصات', 'ملخص القوانين', 'pdf', 95000]
+      ],
+      'شبكات الحاسب': [
+        ['محاضرات', 'OSI Model', 'pdf', 430000],
+        ['محاضرات', 'TCP vs UDP', 'pdf', 310000],
+        ['Labs', 'Lab - Wireshark', 'pdf', 185000],
+        ['مشاريع', 'مشروع Chat App', 'doc', 78000]
+      ],
+      'قواعد البيانات': [
+        ['محاضرات', 'ER Diagrams', 'pdf', 360000],
+        ['محاضرات', 'Normalization', 'pdf', 290000],
+        ['تمارين SQL', 'ورقة استعلامات 1', 'doc', 54000],
+        ['مشاريع', 'مشروع نظام مكتبة', 'doc', 112000]
+      ]
+    };
+    
+    Object.keys(fileTemplates).forEach(subject => {
+      fileTemplates[subject].forEach(([subFolder, fileName, type, size]) => {
+        const key = subject + '/' + subFolder;
+        const folderId = subIds[key] || subjectIds[subject];
+        state.files.push({
+          id: nextId(), name: fileName, type, folder: folderId,
+          mimeType: type === 'pdf' ? 'application/pdf' : type === 'doc' ? 'application/msword' : type === 'img' ? 'image/jpeg' : 'application/octet-stream',
+          size, date: new Date().toISOString()
+        });
+      });
+    });
+    
+    // Lectures - 15
+    state.lectures = [
+      { id: nextId(), subject: 'الفيزياء', doctor: 'د. خالد العمري', day: 'السبت', timeFrom: '08:00', timeTo: '09:30', room: 'قاعة 101' },
+      { id: nextId(), subject: 'الرياضيات', doctor: 'د. سارة أحمد', day: 'السبت', timeFrom: '10:00', timeTo: '11:30', room: 'قاعة 205' },
+      { id: nextId(), subject: 'البرمجة', doctor: 'د. محمد الحسن', day: 'السبت', timeFrom: '12:00', timeTo: '13:30', room: 'معمل 3' },
+      { id: nextId(), subject: 'الكيمياء', doctor: 'د. فاطمة الزهراء', day: 'الأحد', timeFrom: '08:00', timeTo: '09:30', room: 'معمل كيمياء' },
+      { id: nextId(), subject: 'اللغة الإنجليزية', doctor: 'د. ليلى عبدالله', day: 'الأحد', timeFrom: '10:00', timeTo: '11:30', room: 'قاعة 302' },
+      { id: nextId(), subject: 'الإحصاء', doctor: 'د. عمر اليمني', day: 'الأحد', timeFrom: '12:00', timeTo: '13:30', room: 'قاعة 110' },
+      { id: nextId(), subject: 'الفيزياء', doctor: 'د. خالد العمري', day: 'الاثنين', timeFrom: '08:00', timeTo: '09:30', room: 'قاعة 101' },
+      { id: nextId(), subject: 'شبكات الحاسب', doctor: 'د. أحمد الشامي', day: 'الاثنين', timeFrom: '10:00', timeTo: '11:30', room: 'معمل شبكات' },
+      { id: nextId(), subject: 'قواعد البيانات', doctor: 'د. نور الهدى', day: 'الاثنين', timeFrom: '12:00', timeTo: '13:30', room: 'معمل 5' },
+      { id: nextId(), subject: 'الرياضيات', doctor: 'د. سارة أحمد', day: 'الثلاثاء', timeFrom: '08:00', timeTo: '09:30', room: 'قاعة 205' },
+      { id: nextId(), subject: 'البرمجة', doctor: 'د. محمد الحسن', day: 'الثلاثاء', timeFrom: '10:00', timeTo: '12:00', room: 'معمل 3' },
+      { id: nextId(), subject: 'الكيمياء', doctor: 'د. فاطمة الزهراء', day: 'الأربعاء', timeFrom: '08:00', timeTo: '09:30', room: 'معمل كيمياء' },
+      { id: nextId(), subject: 'الإحصاء', doctor: 'د. عمر اليمني', day: 'الأربعاء', timeFrom: '10:00', timeTo: '11:30', room: 'قاعة 110' },
+      { id: nextId(), subject: 'شبكات الحاسب', doctor: 'د. أحمد الشامي', day: 'الأربعاء', timeFrom: '12:00', timeTo: '13:30', room: 'معمل شبكات' },
+      { id: nextId(), subject: 'قواعد البيانات', doctor: 'د. نور الهدى', day: 'الخميس', timeFrom: '09:00', timeTo: '10:30', room: 'معمل 5' }
+    ];
+  }
+  
+  saveState();
+  showToast(`✅ تم تحميل ${size === 'small' ? 'بيانات صغيرة' : 'بيانات كبيرة'}`);
+  refreshCurrentPage();
+}
+
+function clearAllData() {
+  if (!confirm('هل أنت متأكد من حذف كل البيانات؟')) return;
+  state.folders = [];
+  state.files = [];
+  state.lectures = [];
+  state.currentFolder = null;
+  state.navigationStack = [];
+  saveState();
+  // Also clear IndexedDB
+  if (db) {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').clear();
+  }
+  closeModal('modal-testdata');
+  showToast('🗑️ تم حذف كل البيانات');
+  refreshCurrentPage();
+}
+
+// ===== Init =====
+async function init() {
+  loadState();
+  await initDB();
+  renderFiles();
+}
+init();
+</script>
+</body>
+</html>
