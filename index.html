@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>مدير الجامعة</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,15 +21,25 @@
   --radius: 16px;
   --shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border: #334155;
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
 body {
   font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
 .header {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -135,7 +145,21 @@ body {
 .file-icon.pdf { background: #fee2e2; color: #dc2626; }
 .file-icon.doc { background: #dbeafe; color: #2563eb; }
 .file-icon.img { background: #d1fae5; color: #059669; }
-.file-icon.other { background: #f3e8ff; color: #7c3aed; }
+.file-icon.video { background: #fce7f3; color: #db2777; }
+.file-icon.audio { background: #fef3c7; color: #d97706; }
+.file-icon.archive { background: #f3e8ff; color: #7c3aed; }
+.file-icon.code { background: #e0f2fe; color: #0284c7; }
+.file-icon.data { background: #ecfdf5; color: #059669; }
+.file-icon.other { background: #f1f5f9; color: #64748b; }
+[data-theme="dark"] .file-icon.pdf { background: #450a0a; color: #fca5a5; }
+[data-theme="dark"] .file-icon.doc { background: #172554; color: #93c5fd; }
+[data-theme="dark"] .file-icon.img { background: #022c22; color: #6ee7b7; }
+[data-theme="dark"] .file-icon.video { background: #500724; color: #f9a8d4; }
+[data-theme="dark"] .file-icon.audio { background: #451a03; color: #fcd34d; }
+[data-theme="dark"] .file-icon.archive { background: #3b0764; color: #c4b5fd; }
+[data-theme="dark"] .file-icon.code { background: #0c4a6e; color: #7dd3fc; }
+[data-theme="dark"] .file-icon.data { background: #022c22; color: #6ee7b7; }
+[data-theme="dark"] .file-icon.other { background: #1e293b; color: #94a3b8; }
 .file-info { flex: 1; }
 .file-info h4 { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
 .file-info p { font-size: 11px; color: var(--text-secondary); }
@@ -302,19 +326,23 @@ body {
   background: var(--surface);
   border-top: 1px solid var(--border);
   display: flex; justify-content: space-around;
-  padding: 8px 0 12px;
+  padding: 8px 0 calc(12px + env(safe-area-inset-bottom, 0px));
   z-index: 100;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center;
-  gap: 4px; cursor: pointer;
+  gap: 2px; cursor: pointer;
   border: none; background: none;
   color: var(--text-secondary);
   font-size: 11px; font-weight: 500;
-  padding: 4px 16px;
+  padding: 4px 10px;
   border-radius: 12px;
   transition: all 0.2s;
+  flex-shrink: 0;
+  min-width: 56px;
 }
 .nav-item.active { color: var(--primary); background: rgba(99,102,241,0.08); transform: translateY(-2px); }
 .nav-item span { font-size: 22px; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -387,6 +415,18 @@ body {
   position: relative;
   overflow: hidden;
 }
+.btn::after {
+  content: ''; position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.3); width: 100px; height: 100px;
+  margin-top: -50px; margin-right: -50px;
+  top: 50%; right: 50%;
+  transform: scale(0); opacity: 1;
+  transition: none;
+}
+.btn:active::after {
+  transform: scale(4); opacity: 0;
+  transition: transform 0.5s, opacity 0.5s;
+}
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
 .btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(99,102,241,0.2); }
@@ -394,9 +434,11 @@ body {
 .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
 .btn-secondary:active { background: var(--border); }
 .fab {
-  position: fixed;
-  bottom: 90px;
-  left: 20px;
+  position: fixed !important;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+  left: 20px !important;
+  top: auto !important;
+  right: auto !important;
   width: 56px; height: 56px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -408,6 +450,11 @@ body {
   z-index: 90;
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.2s;
+  margin: 0;
+  padding: 0;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 .fab:active { transform: scale(0.9); }
 .fab::after {
@@ -428,7 +475,7 @@ body {
 @keyframes emptyBounce { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .toast {
   position: fixed;
-  bottom: 100px;
+  bottom: calc(95px + env(safe-area-inset-bottom, 0px));
   left: 50%; transform: translateX(-50%);
   background: var(--text);
   color: white;
@@ -462,7 +509,7 @@ body {
 .selection-bar {
   display: none;
   position: fixed;
-  bottom: 80px;
+  bottom: calc(70px + env(safe-area-inset-bottom, 0px));
   left: 0; right: 0;
   background: var(--primary-dark);
   color: white;
@@ -471,6 +518,8 @@ body {
   justify-content: space-around;
   align-items: center;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .selection-bar.show { display: flex; animation: selectionBarIn 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
 @keyframes selectionBarIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -521,6 +570,15 @@ body {
   align-items: center;
   justify-content: center;
   padding: 16px;
+  position: relative;
+  background: var(--bg);
+}
+.viewer-body > div[style*="position:relative"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 .viewer-body iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
 .viewer-body img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -580,6 +638,184 @@ body {
   color: rgba(255,255,255,0.4);
   margin-top: 8px;
 }
+/* Dashboard */
+.dash-welcome {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  animation: cardStagger 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dash-welcome h2 { font-size: 20px; margin-bottom: 4px; }
+.dash-welcome p { font-size: 13px; opacity: 0.85; }
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.dash-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  animation: cardStagger 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.dash-stat:active { transform: scale(0.96); }
+.dash-stat:nth-child(1) { animation-delay: 0.05s; }
+.dash-stat:nth-child(2) { animation-delay: 0.1s; }
+.dash-stat:nth-child(3) { animation-delay: 0.15s; }
+.dash-stat:nth-child(4) { animation-delay: 0.2s; }
+.dash-stat .stat-icon { font-size: 28px; margin-bottom: 6px; }
+.dash-stat .stat-num { font-size: 24px; font-weight: 800; color: var(--primary); }
+.dash-stat .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.dash-section-title { font-size: 15px; font-weight: 700; margin: 16px 0 10px; display: flex; align-items: center; gap: 8px; }
+.dash-today-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+  animation: lectureSlide 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.2s;
+}
+.dash-today-card:active { transform: scale(0.98); }
+.dash-today-card .dt-time { font-size: 12px; font-weight: 700; color: var(--primary); min-width: 45px; text-align: center; }
+.dash-today-card .dt-info { flex: 1; }
+.dash-today-card .dt-info h4 { font-size: 13px; font-weight: 600; }
+.dash-today-card .dt-info p { font-size: 11px; color: var(--text-secondary); }
+.dash-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+.dash-action-btn {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 8px; text-align: center; cursor: pointer; font-size: 11px; font-weight: 600;
+  color: var(--text); transition: all 0.2s;
+  animation: cardStagger 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.dash-action-btn:active { transform: scale(0.95); background: rgba(99,102,241,0.08); }
+.dash-action-btn .da-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+.dash-action-btn:nth-child(1) { animation-delay: 0.25s; }
+.dash-action-btn:nth-child(2) { animation-delay: 0.3s; }
+.dash-action-btn:nth-child(3) { animation-delay: 0.35s; }
+/* Favorites star */
+.fav-star { font-size: 20px; cursor: pointer; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.fav-star:active { transform: scale(1.4); }
+.fav-star.active { animation: starPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes starPop { 0% { transform: scale(1); } 50% { transform: scale(1.5) rotate(15deg); } 100% { transform: scale(1); } }
+/* Tasks */
+.task-item {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+  animation: lectureSlide 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: all 0.2s;
+}
+.task-item:active { transform: scale(0.98); }
+.task-check {
+  width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); flex-shrink: 0; font-size: 12px;
+}
+.task-check.done { background: var(--success); border-color: var(--success); color: white; transform: scale(1.1); }
+.task-info { flex: 1; }
+.task-info h4 { font-size: 13px; font-weight: 500; }
+.task-info.done h4 { text-decoration: line-through; color: var(--text-secondary); }
+.task-info p { font-size: 11px; color: var(--text-secondary); }
+.task-priority { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.task-priority.high { background: #fee2e2; color: #dc2626; }
+.task-priority.medium { background: #fef3c7; color: #d97706; }
+.task-priority.low { background: #d1fae5; color: #059669; }
+[data-theme="dark"] .task-priority.high { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .task-priority.medium { background: #78350f; color: #fcd34d; }
+[data-theme="dark"] .task-priority.low { background: #064e3b; color: #6ee7b7; }
+/* Notes */
+.note-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px; margin-bottom: 8px; cursor: pointer;
+  animation: cardStagger 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.2s;
+}
+.note-card:active { transform: scale(0.98); }
+.note-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.note-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.4; max-height: 40px; overflow: hidden; }
+.note-card .note-meta { font-size: 10px; color: var(--text-secondary); margin-top: 6px; }
+/* Exams */
+.exam-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px; margin-bottom: 10px; position: relative; overflow: hidden;
+  animation: cardStagger 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.2s;
+}
+.exam-card:active { transform: scale(0.98); }
+.exam-card .exam-countdown {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--danger); color: white; padding: 4px 10px;
+  border-radius: 8px; font-size: 11px; font-weight: 700;
+}
+.exam-card .exam-countdown.soon { background: var(--warning); animation: pulse 1.5s infinite; }
+.exam-card .exam-countdown.far { background: var(--success); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.exam-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.exam-card p { font-size: 12px; color: var(--text-secondary); }
+/* Ripple effect */
+.ripple { position: relative; overflow: hidden; }
+.ripple::after {
+  content: ''; position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.3); width: 100px; height: 100px;
+  margin-top: -50px; margin-right: -50px;
+  top: 50%; right: 50%;
+  transform: scale(0); opacity: 1;
+  transition: none;
+}
+.ripple:active::after {
+  transform: scale(4); opacity: 0;
+  transition: transform 0.5s, opacity 0.5s;
+}
+/* Confetti */
+@keyframes confettiDrop { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px;
+  z-index: 999; pointer-events: none;
+  animation: confettiDrop 2s ease-in forwards;
+}
+/* Shake animation */
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+.shake { animation: shake 0.5s ease; }
+/* Hide scrollbar on bottom nav */
+.bottom-nav::-webkit-scrollbar { display: none; }
+.bottom-nav { -ms-overflow-style: none; scrollbar-width: none; }
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+/* Glow on active nav */
+.nav-item.active { box-shadow: 0 -2px 10px rgba(99,102,241,0.15); }
+/* Page-specific fab icons */
+.fab-label { font-size: 14px; font-weight: 300; position: absolute; bottom: -18px; color: var(--text-secondary); white-space: nowrap; }
+/* Smooth gradient borders */
+.gradient-border { position: relative; }
+.gradient-border::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit;
+  background: linear-gradient(135deg, var(--primary), var(--success));
+  z-index: -1; opacity: 0; transition: opacity 0.3s;
+}
+.gradient-border:hover::before { opacity: 1; }
+/* Slide-fade for modals */
+.modal-overlay.show .modal { animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+/* Badge for counts */
+.nav-badge {
+  position: absolute; top: -2px; right: -2px;
+  background: var(--danger); color: white;
+  font-size: 9px; font-weight: 700;
+  min-width: 16px; height: 16px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+}
 </style>
 </head>
 <body>
@@ -589,13 +825,20 @@ body {
   <button class="header-back" id="backBtn" style="display:none" onclick="goBack()">→</button>
   <h1 id="headerTitle">📚 مديري الجامعي</h1>
   <div class="header-actions">
-    <button class="header-action" id="testDataBtn" onclick="openModal('modal-testdata')" title="بيانات تجريبية">🧪</button>
-    <button class="header-action" id="selectBtn" style="display:none" onclick="toggleSelectMode()" title="تحديد">☑️</button>
+    <button class="header-action ripple" onclick="toggleDarkMode()" title="الوضع الليلي" id="themeBtn">🌙</button>
+    <button class="header-action ripple" onclick="openModal('modal-backup')" title="نسخ احتياطي">💾</button>
+    <button class="header-action ripple" id="testDataBtn" onclick="openModal('modal-testdata')" title="بيانات تجريبية">🧪</button>
+    <button class="header-action ripple" id="selectBtn" style="display:none" onclick="toggleSelectMode()" title="تحديد">☑️</button>
   </div>
 </div>
 
+<!-- Page: Dashboard -->
+<div class="page active" id="page-dashboard">
+  <div id="dashboardContent"></div>
+</div>
+
 <!-- Page: Files -->
-<div class="page active" id="page-files">
+<div class="page" id="page-files">
   <div class="search-bar">
     <span>🔍</span>
     <input type="text" placeholder="ابحث في ملفاتك..." id="searchInput" oninput="handleSearch()">
@@ -620,24 +863,34 @@ body {
   <p class="galaxy-hint">👆 اسحب للتحرك • اقرص للتكبير • انقر على دائرة للانتقال</p>
 </div>
 
+<!-- Page: Tasks -->
+<div class="page" id="page-tasks">
+  <div id="tasksList"></div>
+</div>
+
+<!-- Page: Notes -->
+<div class="page" id="page-notes">
+  <div id="notesList"></div>
+</div>
+
+<!-- Page: Exams -->
+<div class="page" id="page-exams">
+  <div id="examsList"></div>
+</div>
+
 <!-- Bottom Nav -->
-<div class="bottom-nav">
-  <button class="nav-item active" onclick="switchPage('files', this)">
-    <span>📁</span>
-    الملفات
-  </button>
-  <button class="nav-item" onclick="switchPage('schedule', this)">
-    <span>📅</span>
-    الجدول
-  </button>
-  <button class="nav-item" onclick="switchPage('galaxy', this)">
-    <span>🌌</span>
-    الخريطة
-  </button>
+<div class="bottom-nav" style="overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;gap:0">
+  <button class="nav-item active" onclick="switchPage('dashboard', this)"><span>🏠</span><span style="font-size:10px">الرئيسية</span></button>
+  <button class="nav-item" onclick="switchPage('files', this)"><span>📁</span><span style="font-size:10px">الملفات</span></button>
+  <button class="nav-item" onclick="switchPage('tasks', this)"><span>✅</span><span style="font-size:10px">المهام</span></button>
+  <button class="nav-item" onclick="switchPage('notes', this)"><span>📝</span><span style="font-size:10px">ملاحظاتي</span></button>
+  <button class="nav-item" onclick="switchPage('exams', this)"><span>🎓</span><span style="font-size:10px">الامتحانات</span></button>
+  <button class="nav-item" onclick="switchPage('schedule', this)"><span>📅</span><span style="font-size:10px">الجدول</span></button>
+  <button class="nav-item" onclick="switchPage('galaxy', this)"><span>🌌</span><span style="font-size:10px">المجرة</span></button>
 </div>
 
 <!-- FAB -->
-<button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+<button class="fab ripple" id="fabBtn" onclick="handleFab()" style="display:none">+</button>
 
 <!-- Selection Bar -->
 <div class="selection-bar" id="selectionBar">
@@ -701,19 +954,19 @@ body {
 <!-- Modal: Add File -->
 <div class="modal-overlay" id="modal-file">
   <div class="modal">
-    <h2>📄 إضافة ملف</h2>
+    <h2>📄 إضافة ملفات</h2>
     <div class="file-upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
       <div class="upload-icon">📎</div>
-      <p>اضغط هنا لاختيار ملف</p>
-      <p style="font-size:11px;margin-top:4px">PDF, Word, صور, وغيرها</p>
-      <div class="file-name" id="uploadFileName"></div>
+      <p>اضغط هنا لاختيار ملفات</p>
+      <p style="font-size:11px;margin-top:4px;color:var(--primary);font-weight:600">✅ يقبل جميع أنواع الملفات — صور، PDF، JSON، MD، ZIP، فيديو، صوت، وغيرها</p>
+      <div id="uploadFileList" style="margin-top:10px;text-align:right"></div>
     </div>
-    <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(this)" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.txt,.zip">
-    <div class="form-group">
-      <label>اسم الملف (يُملأ تلقائياً من الملف)</label>
-      <input type="text" id="fileName" placeholder="اسم الملف">
+    <input type="file" id="fileInput" style="display:none" multiple onchange="handleMultiFileSelect(this)" accept="*/*">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-secondary" onclick="document.getElementById('fileInput').setAttribute('capture','environment'); document.getElementById('fileInput').click()" style="flex:1;font-size:12px;padding:10px">📷 كاميرا</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('fileInput').removeAttribute('capture'); document.getElementById('fileInput').setAttribute('accept','image/*'); document.getElementById('fileInput').click()" style="flex:1;font-size:12px;padding:10px">🖼️ معرض</button>
     </div>
-    <button class="btn btn-primary" onclick="addFile()">رفع الملف</button>
+    <button class="btn btn-primary" id="uploadAllBtn" onclick="uploadAllFiles()" style="display:none">⬆️ رفع الكل</button>
     <button class="btn btn-secondary" onclick="closeModal('modal-file')" style="margin-top:8px">إلغاء</button>
   </div>
 </div>
@@ -789,6 +1042,102 @@ body {
   </div>
 </div>
 
+<!-- Modal: Backup -->
+<div class="modal-overlay" id="modal-backup">
+  <div class="modal">
+    <h2>💾 النسخ الاحتياطي</h2>
+    <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:16px">احفظ بياناتك أو استعدها من ملف</p>
+    <button class="btn btn-primary" onclick="exportData()" style="margin-bottom:10px">⬇️ تصدير البيانات (JSON)</button>
+    <button class="btn btn-primary" onclick="document.getElementById('importInput').click()" style="margin-bottom:10px;background:linear-gradient(135deg,#10b981,#059669)">⬆️ استيراد بيانات</button>
+    <input type="file" id="importInput" style="display:none" accept=".json" onchange="importData(this)">
+    <button class="btn btn-secondary" onclick="closeModal('modal-backup')">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Add Task -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <h2>✅ مهمة جديدة</h2>
+    <div class="form-group">
+      <label>عنوان المهمة</label>
+      <input type="text" id="taskTitle" placeholder="مثال: قراءة الفصل 3">
+    </div>
+    <div class="form-group">
+      <label>الوصف (اختياري)</label>
+      <input type="text" id="taskDesc" placeholder="تفاصيل إضافية">
+    </div>
+    <div class="form-group">
+      <label>الأولوية</label>
+      <select id="taskPriority">
+        <option value="high">🔴 عالية</option>
+        <option value="medium" selected>🟡 متوسطة</option>
+        <option value="low">🟢 منخفضة</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>تاريخ الانتهاء (اختياري)</label>
+      <input type="date" id="taskDue">
+    </div>
+    <button class="btn btn-primary" onclick="addTask()">إضافة</button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-task')" style="margin-top:8px">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Add Note -->
+<div class="modal-overlay" id="modal-note">
+  <div class="modal">
+    <h2>📝 ملاحظة جديدة</h2>
+    <div class="form-group">
+      <label>العنوان</label>
+      <input type="text" id="noteTitle" placeholder="عنوان الملاحظة">
+    </div>
+    <div class="form-group">
+      <label>المحتوى</label>
+      <textarea id="noteContent" placeholder="اكتب ملاحظتك هنا..." style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;min-height:120px;resize:vertical;direction:rtl;font-family:inherit"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="addNote()">حفظ</button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-note')" style="margin-top:8px">إلغاء</button>
+  </div>
+</div>
+
+<!-- Modal: Add Exam -->
+<div class="modal-overlay" id="modal-exam">
+  <div class="modal">
+    <h2>🎓 امتحان جديد</h2>
+    <div class="form-group">
+      <label>اسم المادة</label>
+      <input type="text" id="examSubject" placeholder="مثال: الفيزياء">
+    </div>
+    <div class="form-group">
+      <label>نوع الامتحان</label>
+      <select id="examType">
+        <option value="نصفي">نصفي</option>
+        <option value="نهائي">نهائي</option>
+        <option value="فجائي">فجائي</option>
+        <option value="عملي">عملي</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>تاريخ الامتحان</label>
+      <input type="date" id="examDate">
+    </div>
+    <div class="form-group">
+      <label>الوقت</label>
+      <input type="time" id="examTime">
+    </div>
+    <div class="form-group">
+      <label>القاعة (اختياري)</label>
+      <input type="text" id="examRoom" placeholder="مثال: قاعة A">
+    </div>
+    <div class="form-group">
+      <label>ملاحظات (اختياري)</label>
+      <input type="text" id="examNotes" placeholder="الفصول المطلوبة...">
+    </div>
+    <button class="btn btn-primary" onclick="addExam()">إضافة</button>
+    <button class="btn btn-secondary" onclick="closeModal('modal-exam')" style="margin-top:8px">إلغاء</button>
+  </div>
+</div>
+
 <script>
 // ===== State =====
 let state = {
@@ -796,9 +1145,13 @@ let state = {
   files: [],        // metadata in localStorage
   fileBlobs: {},    // will be managed by IndexedDB
   lectures: [],
+  tasks: [],
+  notes: [],
+  exams: [],
+  favorites: [],    // array of {type: 'file'|'folder', id: number}
   currentFolder: null,
   navigationStack: [],
-  currentPage: 'files',
+  currentPage: 'dashboard',
   selectMode: false,
   selectedFiles: new Set(),
   currentViewFile: null,
@@ -854,6 +1207,10 @@ function saveState() {
   localStorage.setItem('uniFolders', JSON.stringify(state.folders));
   localStorage.setItem('uniFiles', JSON.stringify(state.files));
   localStorage.setItem('uniLectures', JSON.stringify(state.lectures));
+  localStorage.setItem('uniTasks', JSON.stringify(state.tasks));
+  localStorage.setItem('uniNotes', JSON.stringify(state.notes));
+  localStorage.setItem('uniExams', JSON.stringify(state.exams));
+  localStorage.setItem('uniFavorites', JSON.stringify(state.favorites));
 }
 
 function loadState() {
@@ -861,8 +1218,13 @@ function loadState() {
     state.folders = JSON.parse(localStorage.getItem('uniFolders')) || [];
     state.files = JSON.parse(localStorage.getItem('uniFiles')) || [];
     state.lectures = JSON.parse(localStorage.getItem('uniLectures')) || [];
+    state.tasks = JSON.parse(localStorage.getItem('uniTasks')) || [];
+    state.notes = JSON.parse(localStorage.getItem('uniNotes')) || [];
+    state.exams = JSON.parse(localStorage.getItem('uniExams')) || [];
+    state.favorites = JSON.parse(localStorage.getItem('uniFavorites')) || [];
   } catch(e) {
     state.folders = []; state.files = []; state.lectures = [];
+    state.tasks = []; state.notes = []; state.exams = []; state.favorites = [];
   }
 }
 
@@ -881,8 +1243,14 @@ function switchPage(page, el) {
   
   back.style.display = 'none';
   exitSelectMode();
+  updateFabIcon();
   
-  if (page === 'files') {
+  if (page === 'dashboard') {
+    fab.style.display = 'none';
+    title.textContent = '🏠 الرئيسية';
+    selectBtn.style.display = 'none';
+    renderDashboard();
+  } else if (page === 'files') {
     fab.style.display = 'flex';
     title.textContent = '📚 مديري الجامعي';
     selectBtn.style.display = 'flex';
@@ -899,6 +1267,21 @@ function switchPage(page, el) {
     selectBtn.style.display = 'none';
     if (galaxyAnim) { cancelAnimationFrame(galaxyAnim); galaxyAnim = null; }
     requestAnimationFrame(() => initGalaxy());
+  } else if (page === 'tasks') {
+    fab.style.display = 'flex';
+    title.textContent = '✅ مهامي';
+    selectBtn.style.display = 'none';
+    renderTasks();
+  } else if (page === 'notes') {
+    fab.style.display = 'flex';
+    title.textContent = '📝 ملاحظاتي';
+    selectBtn.style.display = 'none';
+    renderNotes();
+  } else if (page === 'exams') {
+    fab.style.display = 'flex';
+    title.textContent = '🎓 الامتحانات';
+    selectBtn.style.display = 'none';
+    renderExams();
   }
 }
 
@@ -907,7 +1290,19 @@ function handleFab() {
     showFabOptions();
   } else if (state.currentPage === 'schedule') {
     openModal('modal-lecture');
+  } else if (state.currentPage === 'tasks') {
+    openModal('modal-task');
+  } else if (state.currentPage === 'notes') {
+    openModal('modal-note');
+  } else if (state.currentPage === 'exams') {
+    openModal('modal-exam');
   }
+}
+
+function updateFabIcon() {
+  const fab = document.getElementById('fabBtn');
+  const icons = { files: '+', schedule: '+', tasks: '+', notes: '+', exams: '+', dashboard: '', galaxy: '' };
+  fab.textContent = icons[state.currentPage] || '+';
 }
 
 function showFabOptions() {
@@ -918,12 +1313,33 @@ function showFabOptions() {
     <div class="modal">
       <h2>➕ إضافة جديد</h2>
       <button class="btn btn-primary" onclick="closeFabOptions(); openModal('modal-folder')" style="margin-bottom:8px">📁 مجلد جديد</button>
-      <button class="btn btn-primary" onclick="closeFabOptions(); openModal('modal-file')" style="margin-bottom:8px; background:linear-gradient(135deg,#10b981,#059669)">📄 رفع ملف</button>
+      <button class="btn btn-primary" onclick="closeFabOptions(); openModal('modal-file')" style="margin-bottom:8px; background:linear-gradient(135deg,#10b981,#059669)">📄 رفع ملفات</button>
+      <button class="btn btn-primary" onclick="closeFabOptions(); quickCamera()" style="margin-bottom:8px; background:linear-gradient(135deg,#8b5cf6,#6d28d9)">📷 تصوير مباشر</button>
+      <button class="btn btn-primary" onclick="closeFabOptions(); quickGallery()" style="margin-bottom:8px; background:linear-gradient(135deg,#ec4899,#be185d)">🖼️ من المعرض</button>
       <button class="btn btn-secondary" onclick="closeFabOptions()">إلغاء</button>
+      <p style="text-align:center;font-size:10px;color:var(--text-secondary);margin-top:8px">💡 يمكنك أيضاً لصق صور من الحافظة (Ctrl+V)</p>
     </div>
   `;
   overlay.onclick = (e) => { if (e.target === overlay) closeFabOptions(); };
   document.body.appendChild(overlay);
+}
+
+function quickCamera() {
+  const input = document.getElementById('fileInput');
+  input.setAttribute('accept', 'image/*');
+  input.setAttribute('capture', 'environment');
+  input.multiple = false;
+  openModal('modal-file');
+  setTimeout(() => input.click(), 300);
+}
+
+function quickGallery() {
+  const input = document.getElementById('fileInput');
+  input.setAttribute('accept', 'image/*');
+  input.removeAttribute('capture');
+  input.multiple = true;
+  openModal('modal-file');
+  setTimeout(() => input.click(), 300);
 }
 
 function closeFabOptions() {
@@ -932,8 +1348,29 @@ function closeFabOptions() {
   });
 }
 
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+  // Reset note editing state when opening fresh
+  if (id === 'modal-note' && !editingNoteId) {
+    document.querySelector('#modal-note h2').textContent = '📝 ملاحظة جديدة';
+  }
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+  // Reset note editing state on close
+  if (id === 'modal-note') {
+    editingNoteId = null;
+    document.querySelector('#modal-note h2').textContent = '📝 ملاحظة جديدة';
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteContent').value = '';
+  }
+  // Reset exam editing on close
+  if (id === 'modal-exam') {
+    const btn = document.querySelector('#modal-exam .btn-primary');
+    btn.textContent = 'إضافة';
+    btn.onclick = addExam;
+  }
+}
 
 // ===== Files Management =====
 function getFoldersInCurrent() { return state.folders.filter(f => f.parent === state.currentFolder); }
@@ -962,15 +1399,17 @@ function renderFiles() {
     const subCount = state.folders.filter(sf => sf.parent === f.id).length + 
                      state.files.filter(sf => sf.folder === f.id).length;
     const selClass = state.selectMode && state.selectedFiles.has('folder-' + f.id) ? 'selected' : '';
+    const isFav = isFavorite('folder', f.id);
     html += `
       <div class="card folder-card ${selClass}" onclick="${state.selectMode ? `toggleSelection('folder-${f.id}')` : `openFolder(${f.id})`}">
         ${state.selectMode ? `<div class="checkbox-circle ${state.selectedFiles.has('folder-'+f.id)?'checked':''}">${state.selectedFiles.has('folder-'+f.id)?'✓':''}</div>` : ''}
         <div class="folder-icon" style="background:linear-gradient(135deg, ${f.color}, ${adjustColor(f.color, -30)})">📁</div>
         <div class="folder-info">
-          <h3>${escapeHtml(f.name)}</h3>
+          <h3>${isFav ? '⭐ ' : ''}${escapeHtml(f.name)}</h3>
           <p>${subCount} عنصر ${f.desc ? '• ' + escapeHtml(f.desc) : ''}</p>
         </div>
         ${!state.selectMode ? `<div class="folder-actions">
+          <button onclick="event.stopPropagation(); toggleFavorite('folder',${f.id})">${isFav?'⭐':'☆'}</button>
           <button onclick="event.stopPropagation(); renameFolder(${f.id})">✏️</button>
           <button onclick="event.stopPropagation(); deleteFolder(${f.id})">🗑️</button>
         </div>` : ''}
@@ -979,17 +1418,18 @@ function renderFiles() {
   });
   
   files.forEach(f => {
-    const icons = { pdf: '📕', doc: '📘', img: '🖼️', other: '📎' };
     const selClass = state.selectMode && state.selectedFiles.has('file-' + f.id) ? 'selected' : '';
+    const isFav = isFavorite('file', f.id);
     html += `
       <div class="card file-card ${selClass}" onclick="${state.selectMode ? `toggleSelection('file-${f.id}')` : `openFile(${f.id})`}">
         ${state.selectMode ? `<div class="checkbox-circle ${state.selectedFiles.has('file-'+f.id)?'checked':''}">${state.selectedFiles.has('file-'+f.id)?'✓':''}</div>` : ''}
-        <div class="file-icon ${f.type}">${icons[f.type] || '📎'}</div>
+        <div class="file-icon ${f.type}">${getFileIcon(f.type)}</div>
         <div class="file-info">
-          <h4>${escapeHtml(f.name)}</h4>
+          <h4>${isFav ? '⭐ ' : ''}${escapeHtml(f.name)}</h4>
           <p>${f.size ? formatSize(f.size) : ''} ${f.date ? '• ' + new Date(f.date).toLocaleDateString('ar') : ''}</p>
         </div>
         ${!state.selectMode ? `<div class="folder-actions">
+          <button onclick="event.stopPropagation(); toggleFavorite('file',${f.id})">${isFav?'⭐':'☆'}</button>
           <button onclick="event.stopPropagation(); shareSingleById(${f.id})" title="مشاركة">📤</button>
           <button onclick="event.stopPropagation(); deleteFile(${f.id})">🗑️</button>
         </div>` : ''}
@@ -1088,63 +1528,140 @@ function deleteFile(id) {
 }
 
 // ===== File Upload & Open =====
-function handleFileSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
-  state.selectedFileForUpload = file;
-  document.getElementById('uploadFileName').textContent = '✅ ' + file.name;
-  // Auto-fill name
-  const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
-  document.getElementById('fileName').value = nameWithoutExt;
+let pendingFiles = []; // Multiple files for upload
+
+function handleMultiFileSelect(input) {
+  const files = [...input.files];
+  if (files.length === 0) return;
+  pendingFiles = files;
+  
+  // Reset accept to default for next use
+  input.setAttribute('accept', '*/*');
+  input.removeAttribute('capture');
+  
+  // Show file list preview
+  const list = document.getElementById('uploadFileList');
+  let html = '';
+  files.forEach((f, i) => {
+    const type = getFileType(f.name);
+    html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;animation:cardStagger 0.3s cubic-bezier(0.22,1,0.36,1) backwards;animation-delay:${i*0.05}s">
+      <span>${getFileIcon(type)}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(f.name)}</span>
+      <span style="color:var(--text-secondary);font-size:10px">${formatSize(f.size)}</span>
+      <span style="color:var(--success);font-weight:600;font-size:10px">جاهز</span>
+    </div>`;
+  });
+  if (files.length > 1) {
+    html += `<p style="text-align:center;font-size:11px;color:var(--primary);margin-top:8px;font-weight:600">${files.length} ملفات جاهزة للرفع</p>`;
+  }
+  list.innerHTML = html;
+  
+  // Show upload all button
+  document.getElementById('uploadAllBtn').style.display = 'block';
+  document.getElementById('uploadAllBtn').textContent = `⬆️ رفع ${files.length > 1 ? files.length + ' ملفات' : 'الملف'}`;
 }
 
-async function addFile() {
-  const nameInput = document.getElementById('fileName').value.trim();
-  
-  if (!state.selectedFileForUpload && !nameInput) {
-    showToast('اختر ملف أو أدخل اسم');
-    return;
-  }
-  
-  const file = state.selectedFileForUpload;
-  const name = nameInput || file.name;
-  
-  // Determine type
-  let type = 'other';
-  if (file) {
-    const ext = file.name.split('.').pop().toLowerCase();
-    if (ext === 'pdf') type = 'pdf';
-    else if (['doc','docx','txt','rtf'].includes(ext)) type = 'doc';
-    else if (['jpg','jpeg','png','gif','webp','bmp'].includes(ext)) type = 'img';
-  }
-  
-  const fileId = Date.now();
-  
-  const fileMeta = {
-    id: fileId,
-    name: name,
-    type: type,
-    mimeType: file ? file.type : 'application/octet-stream',
-    size: file ? file.size : 0,
-    folder: state.currentFolder,
-    date: new Date().toISOString()
+function getFileType(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  // PDF
+  if (ext === 'pdf') return 'pdf';
+  // Documents
+  if (['doc','docx','rtf','odt','pages','tex','wpd'].includes(ext)) return 'doc';
+  // Spreadsheets
+  if (['xls','xlsx','csv','ods','numbers','tsv'].includes(ext)) return 'data';
+  // Presentations
+  if (['ppt','pptx','odp','key'].includes(ext)) return 'doc';
+  // Images
+  if (['jpg','jpeg','png','gif','webp','bmp','svg','ico','tiff','tif','avif','heic','heif','raw','psd','ai','eps'].includes(ext)) return 'img';
+  // Video
+  if (['mp4','avi','mkv','mov','wmv','flv','webm','m4v','3gp','ogv','ts','mpeg','mpg'].includes(ext)) return 'video';
+  // Audio
+  if (['mp3','wav','ogg','flac','aac','wma','m4a','opus','mid','midi','amr'].includes(ext)) return 'audio';
+  // Archives
+  if (['zip','rar','7z','tar','gz','bz2','xz','zst','lz','lzma','cab','iso','dmg','jar','war','arj'].includes(ext)) return 'archive';
+  // Code
+  if (['js','ts','jsx','tsx','py','java','c','cpp','h','hpp','cs','go','rs','rb','php','swift','kt','scala','r','dart','lua','pl','sh','bash','zsh','ps1','bat','cmd','sql','html','htm','css','scss','sass','less','xml','yaml','yml','toml','ini','cfg','conf','env','makefile','cmake','dockerfile','gradle','vb','vbs','asm','s','clj','clojure','hs','erl','ex','exs','elm','jl','nim','zig','v','vue','svelte','astro'].includes(ext)) return 'code';
+  // Data
+  if (['json','jsonl','xml','csv','tsv','db','sqlite','sqlite3','mdb','parquet','arrow',' feather','sav','dta','hdf5','h5','npy','npz','pickle','pkl'].includes(ext)) return 'data';
+  // Text & Markup
+  if (['txt','md','markdown','mdx','rst','adoc','asciidoc','org','log','nfo','diff','patch','tex','bib'].includes(ext)) return 'doc';
+  // eBooks
+  if (['epub','mobi','azw','azw3','ibooks','djvu','fb2'].includes(ext)) return 'doc';
+  // Fonts
+  if (['ttf','otf','woff','woff2','eot'].includes(ext)) return 'other';
+  // Executables / Installers
+  if (['exe','msi','apk','aab','ipa','deb','rpm','appimage','flatpak','snap','pkg','app'].includes(ext)) return 'other';
+  // 3D / CAD
+  if (['stl','obj','fbx','gltf','glb','blend','3ds','max','step','stp','iges','dxf','dwg'].includes(ext)) return 'other';
+  // Design
+  if (['fig','sketch','xd','xd','indd','afdesign','afphoto'].includes(ext)) return 'other';
+  // Default
+  return 'other';
+}
+
+function getFileIcon(type) {
+  const icons = {
+    pdf: '📕', doc: '📘', img: '🖼️', video: '🎬', audio: '🎵',
+    archive: '📦', code: '💻', data: '📊', other: '📎'
   };
+  return icons[type] || '📎';
+}
+
+function isTextFile(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  return ['txt','md','markdown','mdx','json','jsonl','xml','csv','tsv','yaml','yml','toml','ini','cfg','conf','env','log','nfo','diff','patch','rst','adoc','asciidoc','org','html','htm','css','scss','sass','less','js','ts','jsx','tsx','py','java','c','cpp','h','hpp','cs','go','rs','rb','php','swift','kt','scala','r','dart','lua','pl','sh','bash','zsh','ps1','bat','cmd','sql','makefile','cmake','dockerfile','vue','svelte','astro','tex','bib','hs','erl','ex','exs','elm','jl','nim','zig','v','clj','jl','asm','s','gradle','vb','vbs','svg'].includes(ext);
+}
+
+function isMarkdown(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  return ['md','markdown','mdx'].includes(ext);
+}
+
+async function uploadAllFiles() {
+  if (pendingFiles.length === 0) return;
   
-  state.files.push(fileMeta);
+  const total = pendingFiles.length;
+  let done = 0;
   
-  // Save blob to IndexedDB
-  if (file) {
+  for (const file of pendingFiles) {
+    const name = file.name.replace(/\.[^/.]+$/, '');
+    const type = getFileType(file.name);
+    const fileId = Date.now() + done;
+    
+    const fileMeta = {
+      id: fileId,
+      name: name,
+      type: type,
+      mimeType: file.type || 'application/octet-stream',
+      size: file.size,
+      folder: state.currentFolder,
+      date: new Date().toISOString()
+    };
+    
+    state.files.push(fileMeta);
     await saveFileToDB(fileId, file);
+    done++;
   }
   
   saveState();
-  closeModal('modal-file');
-  document.getElementById('fileName').value = '';
-  document.getElementById('uploadFileName').textContent = '';
+  
+  // Reset
+  pendingFiles = [];
   document.getElementById('fileInput').value = '';
-  state.selectedFileForUpload = null;
+  document.getElementById('uploadFileList').innerHTML = '';
+  document.getElementById('uploadAllBtn').style.display = 'none';
+  closeModal('modal-file');
   refreshCurrentPage();
-  showToast('✅ تم رفع الملف');
+  showToast(`✅ تم رفع ${total} ${total > 1 ? 'ملفات' : 'ملف'}`);
+}
+
+// Keep old addFile for backward compatibility
+async function addFile() {
+  if (pendingFiles.length > 0) {
+    uploadAllFiles();
+    return;
+  }
+  showToast('اختر ملفات أولاً');
 }
 
 async function openFile(id) {
@@ -1159,33 +1676,226 @@ async function openFile(id) {
   
   const blob = record.blob;
   const url = URL.createObjectURL(blob);
+  const name = fileMeta.name;
+  const ext = name.split('.').pop().toLowerCase();
   
   state.currentViewFile = fileMeta;
   
   const viewer = document.getElementById('fileViewer');
   const body = document.getElementById('viewerBody');
-  document.getElementById('viewerTitle').textContent = fileMeta.name;
+  document.getElementById('viewerTitle').textContent = name;
   
-  // Render based on type
-  if (fileMeta.mimeType === 'application/pdf') {
-    body.innerHTML = `<iframe src="${url}"></iframe>`;
-  } else if (fileMeta.type === 'img' || fileMeta.mimeType.startsWith('image/')) {
-    body.innerHTML = `<img src="${url}" alt="${escapeHtml(fileMeta.name)}">`;
-  } else if (fileMeta.mimeType.startsWith('text/')) {
+  // Helper: build action bar at bottom of viewer
+  const actionBar = `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:10;backdrop-filter:blur(8px)">
+    <a href="${url}" download="${escapeHtml(name)}" style="padding:8px 16px;border-radius:8px;background:var(--primary);color:white;text-decoration:none;font-size:12px;font-weight:600">⬇️ تحميل</a>
+    <button onclick="viewAsText(${id})" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.15);color:white;border:none;font-size:12px;cursor:pointer">📝 عرض كنص</button>
+    <button onclick="viewAsHex(${id})" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.15);color:white;border:none;font-size:12px;cursor:pointer">🔢 عرض Hex</button>
+  </div>`;
+  
+  // === PDF ===
+  if (ext === 'pdf' || fileMeta.mimeType === 'application/pdf') {
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative"><iframe src="${url}" style="width:100%;height:100%;border:none"></iframe>${actionBar}</div>`;
+  }
+  // === Images ===
+  else if (fileMeta.type === 'img' || (fileMeta.mimeType && fileMeta.mimeType.startsWith('image/')) || ['svg','ico','tiff','tif','avif','heic','heif','webp','bmp'].includes(ext)) {
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center"><img src="${url}" alt="${escapeHtml(name)}" style="max-width:100%;max-height:100%;object-fit:contain">${actionBar}</div>`;
+  }
+  // === Video ===
+  else if (fileMeta.type === 'video' || (fileMeta.mimeType && fileMeta.mimeType.startsWith('video/')) || ['mp4','avi','mkv','mov','wmv','flv','webm','m4v','3gp','ogv','mpeg'].includes(ext)) {
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center"><video controls autoplay style="max-width:100%;max-height:100%;border-radius:8px"><source src="${url}" type="${fileMeta.mimeType || 'video/mp4'}">المتصفح لا يدعم تشغيل هذا الفيديو</video>${actionBar}</div>`;
+  }
+  // === Audio ===
+  else if (fileMeta.type === 'audio' || (fileMeta.mimeType && fileMeta.mimeType.startsWith('audio/')) || ['mp3','wav','ogg','flac','aac','wma','m4a','opus','amr'].includes(ext)) {
+    body.innerHTML = `<div style="text-align:center;padding:40px;position:relative"><p style="font-size:64px;margin-bottom:20px">🎵</p><p style="font-size:16px;font-weight:600;margin-bottom:16px">${escapeHtml(name)}</p><audio controls autoplay src="${url}" style="width:100%;max-width:400px">المتصفح لا يدعم تشغيل هذا الصوت</audio>${actionBar}</div>`;
+  }
+  // === Markdown ===
+  else if (isMarkdown(name)) {
     const text = await blob.text();
-    body.innerHTML = `<pre style="width:100%;height:100%;overflow:auto;padding:16px;font-size:14px;direction:rtl;text-align:right;white-space:pre-wrap">${escapeHtml(text)}</pre>`;
-  } else {
-    body.innerHTML = `
-      <div style="text-align:center">
-        <p style="font-size:48px;margin-bottom:16px">📄</p>
-        <p style="font-size:16px;font-weight:600;margin-bottom:8px">${escapeHtml(fileMeta.name)}</p>
-        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px">${formatSize(fileMeta.size)}</p>
-        <a href="${url}" download="${escapeHtml(fileMeta.name)}" class="btn btn-primary" style="display:inline-block;width:auto;padding:12px 32px;text-decoration:none">⬇️ تحميل الملف</a>
-      </div>
-    `;
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto"><div style="padding:20px;direction:rtl;text-align:right;font-size:14px;line-height:1.8">${renderMarkdown(text)}</div>${actionBar}</div>`;
+  }
+  // === JSON ===
+  else if (ext === 'json' || ext === 'jsonl') {
+    const text = await blob.text();
+    let pretty;
+    try { pretty = JSON.stringify(JSON.parse(text), null, 2); }
+    catch(e) { pretty = text; }
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto"><pre style="padding:16px;font-size:13px;direction:ltr;text-align:left;white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:8px;font-family:'Courier New',monospace">${escapeHtml(pretty)}</pre>${actionBar}</div>`;
+  }
+  // === HTML files ===
+  else if (ext === 'html' || ext === 'htm') {
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative"><iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:8px;background:white"></iframe>${actionBar}</div>`;
+  }
+  // === CSV/TSV as table ===
+  else if (ext === 'csv' || ext === 'tsv') {
+    const text = await blob.text();
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto;padding:8px">${renderCSV(text, ext === 'tsv' ? '\t' : ',')}${actionBar}</div>`;
+  }
+  // === Code / Text files (known extensions) ===
+  else if (fileMeta.type === 'code' || isTextFile(name) || (fileMeta.mimeType && fileMeta.mimeType.startsWith('text/'))) {
+    const text = await blob.text();
+    body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto"><pre style="padding:16px;font-size:13px;direction:ltr;text-align:left;white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:8px;font-family:'Courier New',monospace;line-height:1.6">${escapeHtml(text)}</pre>${actionBar}</div>`;
+  }
+  // === Smart detection: try reading as text first ===
+  else {
+    const buffer = await blob.arrayBuffer();
+    const isText = detectTextContent(buffer);
+    
+    if (isText) {
+      // File is text-based but unknown extension
+      const decoder = new TextDecoder('utf-8', { fatal: false });
+      const text = decoder.decode(buffer);
+      body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto"><pre style="padding:16px;font-size:13px;direction:ltr;text-align:left;white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:8px;font-family:'Courier New',monospace;line-height:1.6">${escapeHtml(text)}</pre>${actionBar}</div>`;
+    } else {
+      // Binary file — show hex viewer
+      body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto">${renderHexView(buffer, name, ext, fileMeta.size)}${actionBar}</div>`;
+    }
   }
   
   viewer.classList.add('show');
+}
+
+// === Detect if binary buffer is text ===
+function detectTextContent(buffer) {
+  const bytes = new Uint8Array(buffer.slice(0, Math.min(buffer.byteLength, 8000)));
+  let nullCount = 0;
+  let printableCount = 0;
+  for (let i = 0; i < bytes.length; i++) {
+    if (bytes[i] === 0) nullCount++;
+    if ((bytes[i] >= 32 && bytes[i] <= 126) || bytes[i] === 9 || bytes[i] === 10 || bytes[i] === 13) printableCount++;
+  }
+  // If more than 30% null bytes or less than 70% printable → binary
+  if (nullCount > bytes.length * 0.1) return false;
+  if (printableCount < bytes.length * 0.7) return false;
+  return true;
+}
+
+// === View any file as text ===
+async function viewAsText(id) {
+  const record = await getFileFromDB(id);
+  if (!record || !record.blob) return;
+  const fileMeta = state.files.find(f => f.id === id);
+  const buffer = await record.blob.arrayBuffer();
+  const decoder = new TextDecoder('utf-8', { fatal: false });
+  const text = decoder.decode(buffer);
+  
+  const body = document.getElementById('viewerBody');
+  const url = URL.createObjectURL(record.blob);
+  const name = fileMeta.name;
+  const actionBar = `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:10;backdrop-filter:blur(8px)">
+    <a href="${url}" download="${escapeHtml(name)}" style="padding:8px 16px;border-radius:8px;background:var(--primary);color:white;text-decoration:none;font-size:12px;font-weight:600">⬇️ تحميل</a>
+    <button onclick="viewAsHex(${id})" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.15);color:white;border:none;font-size:12px;cursor:pointer">🔢 عرض Hex</button>
+  </div>`;
+  body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto"><pre style="padding:16px;font-size:13px;direction:ltr;text-align:left;white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:8px;font-family:'Courier New',monospace;line-height:1.6">${escapeHtml(text)}</pre>${actionBar}</div>`;
+  showToast('📝 عرض كنص');
+}
+
+// === View any file as hex ===
+async function viewAsHex(id) {
+  const record = await getFileFromDB(id);
+  if (!record || !record.blob) return;
+  const fileMeta = state.files.find(f => f.id === id);
+  const buffer = await record.blob.arrayBuffer();
+  
+  const body = document.getElementById('viewerBody');
+  const url = URL.createObjectURL(record.blob);
+  const name = fileMeta.name;
+  const actionBar = `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:10;backdrop-filter:blur(8px)">
+    <a href="${url}" download="${escapeHtml(name)}" style="padding:8px 16px;border-radius:8px;background:var(--primary);color:white;text-decoration:none;font-size:12px;font-weight:600">⬇️ تحميل</a>
+    <button onclick="viewAsText(${id})" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,0.15);color:white;border:none;font-size:12px;cursor:pointer">📝 عرض كنص</button>
+  </div>`;
+  body.innerHTML = `<div style="width:100%;height:100%;position:relative;overflow:auto">${renderHexView(buffer, name, fileMeta.name.split('.').pop(), fileMeta.size)}${actionBar}</div>`;
+  showToast('🔢 عرض Hex');
+}
+
+// === Render hex dump view ===
+function renderHexView(buffer, name, ext, size) {
+  const bytes = new Uint8Array(buffer);
+  const maxBytes = Math.min(bytes.length, 1024 * 100); // Show first 100KB max
+  const lines = [];
+  
+  // File info header
+  let html = `<div style="padding:12px;background:#1e293b;border-bottom:1px solid #334155;font-size:11px;color:#94a3b8;direction:ltr;text-align:left">
+    <strong style="color:#e2e8f0">${escapeHtml(name)}</strong> &nbsp;|&nbsp; ${ext.toUpperCase()} &nbsp;|&nbsp; ${formatSize(size)} &nbsp;|&nbsp; عرض أول ${formatSize(maxBytes)} من أصل ${formatSize(bytes.length)}
+  </div>`;
+  
+  html += `<pre style="padding:12px;font-size:11px;direction:ltr;text-align:left;white-space:pre;background:#0f172a;color:#e2e8f0;font-family:'Courier New',monospace;line-height:1.8;margin:0;overflow:auto">`;
+  
+  for (let offset = 0; offset < maxBytes; offset += 16) {
+    // Offset
+    const hex = offset.toString(16).padStart(8, '0');
+    let line = `<span style="color:#64748b">${hex}</span>  `;
+    
+    // Hex bytes
+    const hexParts = [];
+    const asciiParts = [];
+    for (let i = 0; i < 16; i++) {
+      if (offset + i < bytes.length) {
+        const b = bytes[offset + i];
+        hexParts.push(`<span style="color:${b === 0 ? '#475569' : '#a5b4fc'}">${b.toString(16).padStart(2, '0')}</span>`);
+        asciiParts.push(b >= 32 && b <= 126 ? `<span style="color:#34d399">${String.fromCharCode(b)}</span>` : '<span style="color:#475569">.</span>');
+      } else {
+        hexParts.push('  ');
+        asciiParts.push(' ');
+      }
+      if (i === 7) hexParts.push(' ');
+    }
+    
+    line += hexParts.join(' ') + '  |' + asciiParts.join('') + '|';
+    lines.push(line);
+  }
+  
+  html += lines.join('\n');
+  html += '</pre>';
+  
+  if (bytes.length > maxBytes) {
+    html += `<div style="padding:12px;background:#1e293b;text-align:center;color:#f59e0b;font-size:12px">⚠️ تم عرض أول ${formatSize(maxBytes)} فقط — حمّل الملف لرؤيته كاملاً</div>`;
+  }
+  
+  return html;
+}
+
+// === Simple Markdown renderer ===
+function renderMarkdown(text) {
+  let html = escapeHtml(text);
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3 style="font-size:16px;font-weight:700;margin:16px 0 8px;color:var(--primary)">$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2 style="font-size:18px;font-weight:700;margin:20px 0 10px;color:var(--primary)">$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1 style="font-size:22px;font-weight:800;margin:24px 0 12px;color:var(--primary)">$1</h1>');
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // Code blocks
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre style="background:var(--bg);padding:12px;border-radius:8px;overflow-x:auto;direction:ltr;text-align:left;font-family:monospace;font-size:12px;margin:8px 0">$2</pre>');
+  // Inline code
+  html = html.replace(/`(.+?)`/g, '<code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px">$1</code>');
+  // Links
+  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--primary);text-decoration:underline" target="_blank">$1</a>');
+  // Lists
+  html = html.replace(/^- (.+)$/gm, '<div style="padding-right:16px;margin:2px 0">• $1</div>');
+  html = html.replace(/^(\d+)\. (.+)$/gm, '<div style="padding-right:16px;margin:2px 0">$1. $2</div>');
+  // Line breaks
+  html = html.replace(/\n\n/g, '<br><br>');
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+// === CSV/TSV renderer ===
+function renderCSV(text, delimiter) {
+  const rows = text.trim().split('\n').map(r => r.split(delimiter));
+  if (rows.length === 0) return '<p>ملف فارغ</p>';
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:12px;direction:ltr">';
+  rows.forEach((row, i) => {
+    const tag = i === 0 ? 'th' : 'td';
+    const bg = i === 0 ? 'background:var(--primary);color:white;' : i % 2 === 0 ? 'background:var(--bg);' : '';
+    html += '<tr>';
+    row.forEach(cell => {
+      html += `<${tag} style="padding:8px 12px;border:1px solid var(--border);${bg}text-align:right;white-space:nowrap">${escapeHtml(cell.trim())}</${tag}>`;
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
 }
 
 function closeViewer() {
@@ -1936,7 +2646,7 @@ function galaxyNavigate() {
   state.currentPage = 'files';
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-files').classList.add('active');
-  document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === 0));
+  document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === 1));
   document.getElementById('fabBtn').style.display = 'flex';
   document.getElementById('headerTitle').textContent = '📚 مديري الجامعي';
   document.getElementById('selectBtn').style.display = 'flex';
@@ -1980,22 +2690,11 @@ function handleSearch() {
       <div class="folder-info"><h3>${escapeHtml(f.name)}</h3><p>مجلد</p></div></div>`;
   });
   files.forEach(f => {
-    const icons = { pdf: '📕', doc: '📘', img: '🖼️', other: '📎' };
     html += `<div class="card file-card" onclick="openFile(${f.id})">
-      <div class="file-icon ${f.type}">${icons[f.type]||'📎'}</div>
+      <div class="file-icon ${f.type}">${getFileIcon(f.type)}</div>
       <div class="file-info"><h4>${escapeHtml(f.name)}</h4><p>${formatSize(f.size||0)}</p></div></div>`;
   });
   list.innerHTML = html;
-}
-
-// ===== Refresh current page =====
-function refreshCurrentPage() {
-  if (state.currentPage === 'files') renderFiles();
-  else if (state.currentPage === 'schedule') renderSchedule();
-  else if (state.currentPage === 'galaxy') {
-    if (galaxyAnim) { cancelAnimationFrame(galaxyAnim); galaxyAnim = null; }
-    initGalaxy();
-  }
 }
 
 // ===== Test Data =====
@@ -2062,6 +2761,27 @@ function loadTestData(size) {
       { id: nextId(), subject: 'البرمجة', doctor: 'د. محمد الحسن', day: 'الأحد', timeFrom: '08:00', timeTo: '10:00', room: 'معمل 3' },
       { id: nextId(), subject: 'اللغة الإنجليزية', doctor: 'د. ليلى عبدالله', day: 'الاثنين', timeFrom: '09:00', timeTo: '10:30', room: 'قاعة 302' },
       { id: nextId(), subject: 'الفيزياء', doctor: 'د. خالد العمري', day: 'الأربعاء', timeFrom: '11:00', timeTo: '12:30', room: 'معمل فيزياء' }
+    ];
+    
+    // Tasks
+    state.tasks = [
+      { id: nextId(), title: 'قراءة الفصل الثالث - فيزياء', desc: 'الحركة الدورانية', priority: 'high', due: new Date(Date.now()+86400000*2).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'حل تمارين الرياضيات', desc: 'ورقة التمرين رقم 3', priority: 'medium', due: new Date(Date.now()+86400000*5).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'تسليم مشروع البرمجة', desc: 'Sorting Visualizer', priority: 'high', due: new Date(Date.now()+86400000*7).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'مراجعة مقالة إنجليزية', desc: '', priority: 'low', due: null, done: true, date: new Date().toISOString() }
+    ];
+    
+    // Notes
+    state.notes = [
+      { id: nextId(), title: 'ملخص قوانين نيوتن', content: 'القانون الأول: الجسم الساكن يبقى ساكناً والمتحرك يبقى متحركاً ما لم تؤثر عليه قوة خارجية.\nالقانون الثاني: F = ma\nالقانون الثالث: لكل فعل رد فعل مساوٍ في المقدار ومعاكس في الاتجاه.', date: new Date().toISOString() },
+      { id: nextId(), title: 'مفاهيم البرمجة', content: 'المصفوفات: هيكل بيانات خطي يخزن عناصر من نفس النوع.\nالقوائم المرتبطة: كل عقدة تحتوي على بيانات ومؤشر للعقدة التالية.\nالمكدس: LIFO - آخر ما يدخل أول ما يخرج.', date: new Date(Date.now()-86400000).toISOString() }
+    ];
+    
+    // Exams
+    const examBase = Date.now();
+    state.exams = [
+      { id: nextId(), subject: 'الفيزياء', type: 'نصفي', date: new Date(examBase+86400000*3).toISOString().slice(0,10), time: '09:00', room: 'قاعة 101', notes: 'الفصول 1-3' },
+      { id: nextId(), subject: 'الرياضيات', type: 'فجائي', date: new Date(examBase+86400000*10).toISOString().slice(0,10), time: '10:00', room: 'قاعة 205', notes: 'المصفوفات والتفاضل' }
     ];
     
   } else {
@@ -2195,6 +2915,37 @@ function loadTestData(size) {
       { id: nextId(), subject: 'شبكات الحاسب', doctor: 'د. أحمد الشامي', day: 'الأربعاء', timeFrom: '12:00', timeTo: '13:30', room: 'معمل شبكات' },
       { id: nextId(), subject: 'قواعد البيانات', doctor: 'د. نور الهدى', day: 'الخميس', timeFrom: '09:00', timeTo: '10:30', room: 'معمل 5' }
     ];
+    
+    // Tasks (large)
+    state.tasks = [
+      { id: nextId(), title: 'قراءة الفصل 3 - فيزياء', desc: 'الحركة الدورانية', priority: 'high', due: new Date(Date.now()+86400000*2).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'حل تمارين رياضيات - ورقة 4', desc: 'تكاملات', priority: 'high', due: new Date(Date.now()+86400000*1).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'تسليم مشروع Sorting Visualizer', desc: 'C++ مع واجهة رسومية', priority: 'high', due: new Date(Date.now()+86400000*7).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'تقرير تجربة التقطير', desc: 'كيمياء عضوية', priority: 'medium', due: new Date(Date.now()+86400000*4).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'مراجعة مقالة Academic Writing', desc: '', priority: 'medium', due: new Date(Date.now()+86400000*6).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'Lab Wireshark - تحليل حزم', desc: 'شبكات', priority: 'low', due: new Date(Date.now()+86400000*10).toISOString().slice(0,10), done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'تمرين SQL - استعلامات JOIN', desc: '', priority: 'medium', due: null, done: false, date: new Date().toISOString() },
+      { id: nextId(), title: 'ملخص التوزيع الطبيعي', desc: 'إحصاء', priority: 'low', due: null, done: true, date: new Date().toISOString() },
+      { id: nextId(), title: 'مشروع نظام مكتبة', desc: 'قواعد بيانات - ERD + SQL', priority: 'high', due: new Date(Date.now()+86400000*14).toISOString().slice(0,10), done: false, date: new Date().toISOString() }
+    ];
+    
+    // Notes (large)
+    state.notes = [
+      { id: nextId(), title: 'ملخص قوانين نيوتن', content: 'القانون الأول: الجسم الساكن يبقى ساكناً والمتحرك يبقى متحركاً ما لم تؤثر عليه قوة خارجية.\nالقانون الثاني: F = ma\nالقانون الثالث: لكل فعل رد فعل مساوٍ في المقدار ومعاكس في الاتجاه.', date: new Date().toISOString() },
+      { id: nextId(), title: 'هياكل البيانات', content: 'المصفوفات: بنية خطية، وصول عشوائي O(1).\nالقوائم المرتبطة: إدراج وحذف O(1) لكن وصول O(n).\nالمكدس: LIFO.\nالطابور: FIFO.\nالأشجار الثنائية: بحث O(log n) متوسط.', date: new Date(Date.now()-86400000).toISOString() },
+      { id: nextId(), title: 'معادلات ماكسويل', content: '1. قانون غاوس للكهرباء\n2. قانون غاوس للمغناطيسية\n3. قانون فاراداي\n4. قانون أمبير-ماكسويل\nهذه المعادلات تصف سلوك المجالات الكهربائية والمغناطيسية.', date: new Date(Date.now()-86400000*2).toISOString() },
+      { id: nextId(), title: 'ملاحظات OSI Model', content: 'الطبقة 7: Application\nالطبقة 6: Presentation\nالطبقة 5: Session\nالطبقة 4: Transport (TCP/UDP)\nالطبقة 3: Network (IP)\nالطبقة 2: Data Link\nالطبقة 1: Physical', date: new Date(Date.now()-86400000*3).toISOString() },
+      { id: nextId(), title: 'قواعد Normalization', content: '1NF: لا تكرار في الأعمدة\n2NF: 1NF + لا اعتماد جزئي\n3NF: 2NF + لا اعتماد عابر\nBCNF: كل محدد هو مفتاح مرشح', date: new Date(Date.now()-86400000*4).toISOString() }
+    ];
+    
+    // Exams (large)
+    state.exams = [
+      { id: nextId(), subject: 'الفيزياء', type: 'نصفي', date: new Date(Date.now()+86400000*3).toISOString().slice(0,10), time: '08:00', room: 'قاعة 101', notes: 'الفصول 1-4: الميكانيكا' },
+      { id: nextId(), subject: 'الرياضيات', type: 'فجائي', date: new Date(Date.now()+86400000*5).toISOString().slice(0,10), time: '10:00', room: 'قاعة 205', notes: 'المصفوفات والتفاضل والتكامل' },
+      { id: nextId(), subject: 'البرمجة', type: 'عملي', date: new Date(Date.now()+86400000*8).toISOString().slice(0,10), time: '08:00', room: 'معمل 3', notes: 'برمجة مشروع Sorting + أسئلة نظرية' },
+      { id: nextId(), subject: 'الكيمياء', type: 'نصفي', date: new Date(Date.now()+86400000*12).toISOString().slice(0,10), time: '09:00', room: 'معمل كيمياء', notes: 'الروابط والتفاعلات العضوية' },
+      { id: nextId(), subject: 'شبكات الحاسب', type: 'نهائي', date: new Date(Date.now()+86400000*20).toISOString().slice(0,10), time: '10:00', room: 'قاعة 301', notes: 'OSI, TCP/IP, Routing, Security' }
+    ];
   }
   
   saveState();
@@ -2207,6 +2958,10 @@ function clearAllData() {
   state.folders = [];
   state.files = [];
   state.lectures = [];
+  state.tasks = [];
+  state.notes = [];
+  state.exams = [];
+  state.favorites = [];
   state.currentFolder = null;
   state.navigationStack = [];
   saveState();
@@ -2220,13 +2975,448 @@ function clearAllData() {
   refreshCurrentPage();
 }
 
+// ===== Dashboard =====
+function renderDashboard() {
+  const el = document.getElementById('dashboardContent');
+  const totalFiles = state.files.length;
+  const totalFolders = state.folders.length;
+  const totalLectures = state.lectures.length;
+  const totalSize = state.files.reduce((s, f) => s + (f.size || 0), 0);
+  const totalTasks = state.tasks.filter(t => !t.done).length;
+  const totalExams = state.exams.filter(e => new Date(e.date) >= new Date(new Date().toDateString())).length;
+  const dayMap = { 6: 'السبت', 0: 'الأحد', 1: 'الاثنين', 2: 'الثلاثاء', 3: 'الأربعاء', 4: 'الخميس', 5: 'الجمعة' };
+  const today = dayMap[new Date().getDay()];
+  const todayLectures = state.lectures.filter(l => l.day === today).sort((a,b) => (a.timeFrom||'').localeCompare(b.timeFrom||''));
+  const recentFiles = [...state.files].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+  const upcomingExams = [...state.exams].filter(e => new Date(e.date) >= new Date(new Date().toDateString())).sort((a,b) => new Date(a.date) - new Date(b.date)).slice(0, 2);
+  const pendingTasks = state.tasks.filter(t => !t.done).sort((a,b) => {
+    const p = {high:0,medium:1,low:2};
+    return (p[a.priority]||1) - (p[b.priority]||1);
+  }).slice(0, 3);
+  const navItems = document.querySelectorAll('.nav-item');
+  
+  let html = `<div class="dash-welcome"><h2>📚 مرحباً بك</h2><p>${today} — ${todayLectures.length} محاضرة اليوم</p></div>`;
+  html += `<div class="dash-stats">
+    <div class="dash-stat" onclick="switchPage('files',document.querySelectorAll('.nav-item')[1])"><div class="stat-icon">📄</div><div class="stat-num">${totalFiles}</div><div class="stat-label">ملف</div></div>
+    <div class="dash-stat" onclick="switchPage('files',document.querySelectorAll('.nav-item')[1])"><div class="stat-icon">📁</div><div class="stat-num">${totalFolders}</div><div class="stat-label">مجلد</div></div>
+    <div class="dash-stat" onclick="switchPage('tasks',document.querySelectorAll('.nav-item')[2])"><div class="stat-icon">✅</div><div class="stat-num">${totalTasks}</div><div class="stat-label">مهمة معلقة</div></div>
+    <div class="dash-stat" onclick="switchPage('exams',document.querySelectorAll('.nav-item')[4])"><div class="stat-icon">🎓</div><div class="stat-num">${totalExams}</div><div class="stat-label">امتحان قادم</div></div>
+  </div>`;
+  
+  // Upcoming exams
+  if (upcomingExams.length > 0) {
+    html += `<div class="dash-section-title">🎓 أقرب الامتحانات</div>`;
+    const now = new Date();
+    upcomingExams.forEach((e, i) => {
+      const diffDays = Math.ceil((new Date(e.date) - now) / (1000*60*60*24));
+      const urgency = diffDays <= 3 ? 'var(--danger)' : diffDays <= 7 ? 'var(--warning)' : 'var(--success)';
+      html += `<div class="dash-today-card" style="animation-delay:${i*0.05}s;border-right:3px solid ${urgency}" onclick="switchPage('exams',document.querySelectorAll('.nav-item')[4])"><div class="dt-time" style="color:${urgency}">${diffDays}ي</div><div class="dt-info"><h4>${escapeHtml(e.subject)}</h4><p>${escapeHtml(e.type)} • ${new Date(e.date).toLocaleDateString('ar')}</p></div></div>`;
+    });
+  }
+  
+  // Pending tasks
+  if (pendingTasks.length > 0) {
+    html += `<div class="dash-section-title">✅ مهام عاجلة</div>`;
+    const priorityColors = { high: 'var(--danger)', medium: 'var(--warning)', low: 'var(--success)' };
+    pendingTasks.forEach((t, i) => {
+      html += `<div class="dash-today-card" style="animation-delay:${i*0.05}s;border-right:3px solid ${priorityColors[t.priority]||'var(--primary)'}" onclick="switchPage('tasks',document.querySelectorAll('.nav-item')[2])"><div class="dt-time">📌</div><div class="dt-info"><h4>${escapeHtml(t.title)}</h4><p>${t.due ? '📅 ' + new Date(t.due).toLocaleDateString('ar') : 'بدون موعد'}</p></div></div>`;
+    });
+  }
+  
+  if (todayLectures.length > 0) {
+    html += `<div class="dash-section-title">📋 محاضرات اليوم</div>`;
+    todayLectures.forEach((l,i) => {
+      html += `<div class="dash-today-card" style="animation-delay:${i*0.05}s" onclick="switchPage('schedule',document.querySelectorAll('.nav-item')[5])"><div class="dt-time">${l.timeFrom||'--:--'}</div><div class="dt-info"><h4>${escapeHtml(l.subject)}</h4><p>${escapeHtml(l.doctor)} ${l.room?'• '+escapeHtml(l.room):''}</p></div></div>`;
+    });
+  } else {
+    html += `<div class="dash-section-title">📋 محاضرات اليوم</div><div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px">🎉 لا محاضرات اليوم!</div>`;
+  }
+  
+  if (recentFiles.length > 0) {
+    html += `<div class="dash-section-title">🕐 آخر الملفات</div>`;
+    recentFiles.forEach((f,i) => {
+      html += `<div class="dash-today-card" style="animation-delay:${i*0.05}s" onclick="switchPage('files',document.querySelectorAll('.nav-item')[1])"><div class="dt-time">${getFileIcon(f.type)}</div><div class="dt-info"><h4>${escapeHtml(f.name)}</h4><p>${formatSize(f.size||0)}</p></div></div>`;
+    });
+  }
+  
+  html += `<div class="dash-section-title">⚡ إجراءات سريعة</div>`;
+  html += `<div class="dash-actions">
+    <div class="dash-action-btn" onclick="openModal('modal-backup')"><span class="da-icon">💾</span>نسخ احتياطي</div>
+    <div class="dash-action-btn" onclick="openModal('modal-testdata')"><span class="da-icon">🧪</span>بيانات تجريبية</div>
+    <div class="dash-action-btn" onclick="switchPage('galaxy',document.querySelectorAll('.nav-item')[6])"><span class="da-icon">🌌</span>المجرة</div>
+  </div>`;
+  
+  el.innerHTML = html;
+}
+
+// ===== Dark Mode =====
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('uniTheme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+}
+
+function loadTheme() {
+  const theme = localStorage.getItem('uniTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+// ===== Backup =====
+function exportData() {
+  const data = { folders: state.folders, files: state.files, lectures: state.lectures, tasks: state.tasks, notes: state.notes, exams: state.exams, favorites: state.favorites, exportDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `uni-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  closeModal('modal-backup');
+  showToast('✅ تم تصدير البيانات');
+  triggerConfetti();
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.folders) state.folders = data.folders;
+      if (data.files) state.files = data.files;
+      if (data.lectures) state.lectures = data.lectures;
+      if (data.tasks) state.tasks = data.tasks;
+      if (data.notes) state.notes = data.notes;
+      if (data.exams) state.exams = data.exams;
+      if (data.favorites) state.favorites = data.favorites;
+      saveState(); closeModal('modal-backup'); refreshCurrentPage();
+      showToast('✅ تم استيراد البيانات');
+      triggerConfetti();
+    } catch(err) { showToast('❌ ملف غير صالح'); shakeElement(document.getElementById('modal-backup')); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// ===== Tasks =====
+function renderTasks() {
+  const list = document.getElementById('tasksList');
+  if (state.tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><span>✅</span><p>لا توجد مهام بعد</p><p style="margin-top:8px;font-size:12px">اضغط + لإضافة مهمة جديدة</p></div>`;
+    return;
+  }
+  // Sort: undone first, then by priority, then by due date
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  const sorted = [...state.tasks].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) return priorityOrder[a.priority] - priorityOrder[b.priority];
+    if (a.due && b.due) return new Date(a.due) - new Date(b.due);
+    return new Date(b.date) - new Date(a.date);
+  });
+  const priorityLabels = { high: 'عالية', medium: 'متوسطة', low: 'منخفضة' };
+  let html = '';
+  sorted.forEach((t, i) => {
+    const overdue = t.due && !t.done && new Date(t.due) < new Date(new Date().toDateString());
+    html += `<div class="task-item" style="animation-delay:${i*0.04}s;${overdue?'border-right:3px solid var(--danger)':''}">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <div class="task-info ${t.done?'done':''}">
+        <h4>${escapeHtml(t.title)}</h4>
+        <p>${t.desc ? escapeHtml(t.desc) : ''} ${t.due ? '• 📅 ' + new Date(t.due).toLocaleDateString('ar') : ''}</p>
+      </div>
+      <span class="task-priority ${t.priority}">${priorityLabels[t.priority]}</span>
+      <button style="width:28px;height:28px;border-radius:50%;border:none;background:#fee2e2;color:var(--danger);cursor:pointer;font-size:12px" onclick="deleteTask(${t.id})">✕</button>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function addTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) { showToast('أدخل عنوان المهمة'); return; }
+  state.tasks.push({
+    id: Date.now(), title,
+    desc: document.getElementById('taskDesc').value.trim(),
+    priority: document.getElementById('taskPriority').value,
+    due: document.getElementById('taskDue').value || null,
+    done: false,
+    date: new Date().toISOString()
+  });
+  saveState();
+  closeModal('modal-task');
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('taskDue').value = '';
+  document.getElementById('taskPriority').value = 'medium';
+  refreshCurrentPage();
+  showToast('✅ تمت إضافة المهمة');
+  triggerConfetti();
+}
+
+function toggleTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (task) {
+    task.done = !task.done;
+    saveState();
+    renderTasks();
+    if (task.done) { triggerConfetti(); showToast('🎉 أحسنت!'); }
+  }
+}
+
+function deleteTask(id) {
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  saveState();
+  renderTasks();
+  showToast('🗑️ تم الحذف');
+}
+
+// ===== Notes =====
+let editingNoteId = null;
+
+function renderNotes() {
+  const list = document.getElementById('notesList');
+  if (state.notes.length === 0) {
+    list.innerHTML = `<div class="empty-state"><span>📝</span><p>لا توجد ملاحظات بعد</p><p style="margin-top:8px;font-size:12px">اضغط + لإضافة ملاحظة</p></div>`;
+    return;
+  }
+  const sorted = [...state.notes].sort((a, b) => new Date(b.date) - new Date(a.date));
+  let html = '';
+  sorted.forEach((n, i) => {
+    html += `<div class="note-card" style="animation-delay:${i*0.04}s" onclick="editNote(${n.id})">
+      <h4>${escapeHtml(n.title)}</h4>
+      <p>${escapeHtml(n.content.substring(0, 100))}${n.content.length > 100 ? '...' : ''}</p>
+      <div class="note-meta" style="display:flex;justify-content:space-between;align-items:center">
+        <span>${new Date(n.date).toLocaleDateString('ar')}</span>
+        <button style="width:24px;height:24px;border-radius:50%;border:none;background:#fee2e2;color:var(--danger);cursor:pointer;font-size:10px" onclick="event.stopPropagation();deleteNote(${n.id})">✕</button>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function addNote() {
+  const title = document.getElementById('noteTitle').value.trim();
+  const content = document.getElementById('noteContent').value.trim();
+  if (!title) { showToast('أدخل عنوان الملاحظة'); return; }
+  
+  if (editingNoteId) {
+    const note = state.notes.find(n => n.id === editingNoteId);
+    if (note) { note.title = title; note.content = content; note.date = new Date().toISOString(); }
+    editingNoteId = null;
+  } else {
+    state.notes.push({ id: Date.now(), title, content, date: new Date().toISOString() });
+  }
+  saveState();
+  closeModal('modal-note');
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteContent').value = '';
+  refreshCurrentPage();
+  showToast('✅ تم الحفظ');
+}
+
+function editNote(id) {
+  const note = state.notes.find(n => n.id === id);
+  if (!note) return;
+  editingNoteId = id;
+  document.getElementById('noteTitle').value = note.title;
+  document.getElementById('noteContent').value = note.content;
+  document.querySelector('#modal-note h2').textContent = '📝 تعديل الملاحظة';
+  openModal('modal-note');
+}
+
+function deleteNote(id) {
+  if (!confirm('حذف هذه الملاحظة؟')) return;
+  state.notes = state.notes.filter(n => n.id !== id);
+  saveState();
+  renderNotes();
+  showToast('🗑️ تم الحذف');
+}
+
+// ===== Exams =====
+function renderExams() {
+  const list = document.getElementById('examsList');
+  if (state.exams.length === 0) {
+    list.innerHTML = `<div class="empty-state"><span>🎓</span><p>لا توجد امتحانات بعد</p><p style="margin-top:8px;font-size:12px">اضغط + لإضافة امتحان</p></div>`;
+    return;
+  }
+  const sorted = [...state.exams].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const now = new Date();
+  let html = '';
+  sorted.forEach((e, i) => {
+    const examDate = new Date(e.date);
+    const diffDays = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+    let countdownText = '', countdownClass = '';
+    if (diffDays < 0) { countdownText = 'انتهى'; countdownClass = ''; }
+    else if (diffDays === 0) { countdownText = 'اليوم!'; countdownClass = 'soon'; }
+    else if (diffDays <= 3) { countdownText = diffDays + ' أيام'; countdownClass = 'soon'; }
+    else if (diffDays <= 14) { countdownText = diffDays + ' يوم'; countdownClass = ''; }
+    else { countdownText = diffDays + ' يوم'; countdownClass = 'far'; }
+    
+    html += `<div class="exam-card" style="animation-delay:${i*0.05}s;${diffDays < 0 ? 'opacity:0.5' : ''}">
+      ${countdownText ? `<div class="exam-countdown ${countdownClass}">${countdownText}</div>` : ''}
+      <h4>${escapeHtml(e.subject)}</h4>
+      <p>${escapeHtml(e.type)} ${e.date ? '• 📅 ' + new Date(e.date).toLocaleDateString('ar') : ''} ${e.time ? '• ⏰ ' + e.time : ''}</p>
+      ${e.room ? `<p>📍 ${escapeHtml(e.room)}</p>` : ''}
+      ${e.notes ? `<p style="margin-top:4px;font-size:11px;color:var(--text-secondary)">📋 ${escapeHtml(e.notes)}</p>` : ''}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:12px" onclick="editExam(${e.id})">✏️ تعديل</button>
+        <button style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:#fee2e2;color:var(--danger);cursor:pointer;font-size:12px" onclick="deleteExam(${e.id})">🗑️ حذف</button>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function addExam() {
+  const subject = document.getElementById('examSubject').value.trim();
+  const date = document.getElementById('examDate').value;
+  if (!subject) { showToast('أدخل اسم المادة'); return; }
+  if (!date) { showToast('أدخل تاريخ الامتحان'); return; }
+  state.exams.push({
+    id: Date.now(), subject,
+    type: document.getElementById('examType').value,
+    date: date,
+    time: document.getElementById('examTime').value || null,
+    room: document.getElementById('examRoom').value.trim(),
+    notes: document.getElementById('examNotes').value.trim()
+  });
+  saveState();
+  closeModal('modal-exam');
+  ['examSubject','examDate','examTime','examRoom','examNotes'].forEach(id => document.getElementById(id).value = '');
+  refreshCurrentPage();
+  showToast('✅ تمت إضافة الامتحان');
+}
+
+function editExam(id) {
+  const exam = state.exams.find(e => e.id === id);
+  if (!exam) return;
+  document.getElementById('examSubject').value = exam.subject;
+  document.getElementById('examType').value = exam.type;
+  document.getElementById('examDate').value = exam.date;
+  document.getElementById('examTime').value = exam.time || '';
+  document.getElementById('examRoom').value = exam.room || '';
+  document.getElementById('examNotes').value = exam.notes || '';
+  const btn = document.querySelector('#modal-exam .btn-primary');
+  btn.textContent = '💾 حفظ التعديل';
+  btn.onclick = () => {
+    exam.subject = document.getElementById('examSubject').value.trim();
+    exam.type = document.getElementById('examType').value;
+    exam.date = document.getElementById('examDate').value;
+    exam.time = document.getElementById('examTime').value || null;
+    exam.room = document.getElementById('examRoom').value.trim();
+    exam.notes = document.getElementById('examNotes').value.trim();
+    saveState();
+    closeModal('modal-exam');
+    btn.textContent = 'إضافة';
+    btn.onclick = addExam;
+    ['examSubject','examDate','examTime','examRoom','examNotes'].forEach(id => document.getElementById(id).value = '');
+    refreshCurrentPage();
+    showToast('✅ تم التعديل');
+  };
+  openModal('modal-exam');
+}
+
+function deleteExam(id) {
+  if (!confirm('حذف هذا الامتحان؟')) return;
+  state.exams = state.exams.filter(e => e.id !== id);
+  saveState();
+  renderExams();
+  showToast('🗑️ تم الحذف');
+}
+
+// ===== Favorites =====
+function toggleFavorite(type, id) {
+  const idx = state.favorites.findIndex(f => f.type === type && f.id === id);
+  if (idx >= 0) {
+    state.favorites.splice(idx, 1);
+    showToast('⭐ تمت الإزالة من المفضلة');
+  } else {
+    state.favorites.push({ type, id });
+    showToast('⭐ تمت الإضافة للمفضلة');
+    triggerConfetti();
+  }
+  saveState();
+  refreshCurrentPage();
+}
+
+function isFavorite(type, id) {
+  return state.favorites.some(f => f.type === type && f.id === id);
+}
+
+// ===== Confetti Animation =====
+function triggerConfetti() {
+  const colors = ['#f59e0b', '#ef4444', '#10b981', '#6366f1', '#ec4899', '#3b82f6'];
+  for (let i = 0; i < 20; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (1.5 + Math.random()) + 's';
+    piece.style.animationDelay = (Math.random() * 0.5) + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.width = (6 + Math.random() * 8) + 'px';
+    piece.style.height = (6 + Math.random() * 8) + 'px';
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 3000);
+  }
+}
+
+// ===== Shake element utility =====
+function shakeElement(el) {
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+
+// ===== Refresh current page =====
+function refreshCurrentPage() {
+  if (state.currentPage === 'files') renderFiles();
+  else if (state.currentPage === 'schedule') renderSchedule();
+  else if (state.currentPage === 'galaxy') {
+    if (galaxyAnim) { cancelAnimationFrame(galaxyAnim); galaxyAnim = null; }
+    initGalaxy();
+  } else if (state.currentPage === 'tasks') renderTasks();
+  else if (state.currentPage === 'notes') renderNotes();
+  else if (state.currentPage === 'exams') renderExams();
+  else if (state.currentPage === 'dashboard') renderDashboard();
+}
+
 // ===== Init =====
 async function init() {
   loadState();
+  loadTheme();
   await initDB();
+  renderDashboard();
   renderFiles();
+  
+  // === Clipboard paste support ===
+  document.addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    
+    const files = [];
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const blob = item.getAsFile();
+        if (blob) files.push(blob);
+      }
+    }
+    
+    if (files.length > 0) {
+      // Make sure we're on files page
+      if (state.currentPage !== 'files') return;
+      
+      pendingFiles = files;
+      openModal('modal-file');
+      
+      // Trigger the display
+      const fakeInput = { files: files };
+      handleMultiFileSelect(fakeInput);
+      
+      showToast(`📋 تم لصق ${files.length} ${files.length > 1 ? 'صور' : 'صورة'} — اضغط رفع`);
+    }
+  });
 }
 init();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3807538f8a29620',t:'MTc4ODg5Njc3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
